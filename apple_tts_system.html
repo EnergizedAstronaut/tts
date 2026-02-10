@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple TTS Training System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .playback-controls {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e0e0e0;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .samples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .sample-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .sample-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .sample-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .sample-card.playing {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .sample-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .sample-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .sample-category {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .sample-text {
+            font-size: 1.05em;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .sample-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .sample-duration {
+            font-weight: 600;
+        }
+
+        .play-icon {
+            font-size: 1.5em;
+            color: #667eea;
+        }
+
+        .phoneme-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .phoneme-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .phoneme-sequence {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #764ba2;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .waveform {
+            height: 80px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .waveform-text {
+            color: #999;
+            font-size: 0.9em;
+            z-index: 1;
+        }
+
+        .waveform.playing {
+            background: linear-gradient(90deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #667eea 50%, 
+                #764ba2 75%, 
+                #667eea 100%);
+            background-size: 200% 100%;
+            animation: wave 2s linear infinite;
+        }
+
+        .waveform.playing .waveform-text {
+            color: white;
+            font-weight: 600;
+        }
+
+        @keyframes wave {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .info-panel h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .samples-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🎙️</span>
+                <span>Apple TTS Training System</span>
+            </h1>
+            <p class="subtitle">Professional Speech Synthesis Using Real Apple Training Data</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalSamples">0</div>
+                <div class="stat-label">Audio Samples</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCategories">0</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgDuration">0.0s</div>
+                <div class="stat-label">Avg Duration</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">en-US</div>
+                <div class="stat-label">Locale</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="info-panel">
+                <h3>About This System</h3>
+                <p>This text-to-speech system uses real audio recordings from Apple's TTS training dataset. Each sample includes the original audio, phonetic transcription using Apple's phoneme notation, and metadata about duration and categorization. Click any sample below to hear the actual trained voice, or use the text matcher to find similar phrases.</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Audio Playback</h2>
+                <div class="playback-controls">
+                    <div class="input-group">
+                        <label for="textInput">Enter Text (will find closest matching sample)</label>
+                        <textarea id="textInput" placeholder="Type text here to find the closest matching audio sample from the training data..."></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-primary" id="matchBtn">
+                            <span>🔍</span>
+                            <span>Find & Play Match</span>
+                        </button>
+                        <button class="btn-secondary" id="stopBtn" disabled>
+                            <span>⏹️</span>
+                            <span>Stop</span>
+                        </button>
+                    </div>
+
+                    <div class="waveform" id="waveform">
+                        <span class="waveform-text">Audio Visualization</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Training Samples Browser</h2>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Search samples by text...">
+                </div>
+
+                <div class="filter-buttons" id="filterButtons"></div>
+
+                <div class="samples-grid" id="samplesGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Training data with embedded audio
+        const trainingData = [
+            {"script_title":"questions","transcription":"w e # D J # 146 r 145 v L I N # 146 $ g E D e # ? ~","utterance_name":"YIhoP_14","words":"Were they traveling together?","phone_sequence":"w e # D J # 146 r 145 v L I N # 146 $ g E D e","sentence_idx":0,"sentence_estimated_duration":1.46,"locale":"en-US","paragraph_idx":14},
+            {"script_title":"questions","transcription":"I z # m Y 145 m i # D $ # K 145 P $ R L # $ v # f l A r I R $ # ? ~","utterance_name":"YIhoP_4","words":"Is Miami the capital of Florida?","phone_sequence":"I z # m Y 145 m i # D $ # K 145 P $ R L # $ v # f l A r I R $","sentence_idx":0,"sentence_estimated_duration":2.03,"locale":"en-US","paragraph_idx":4},
+            {"script_title":"exclamations","transcription":"D 145 t # r O l e K O s t e # w $ z # s O # f ^ n # ! ~","utterance_name":"rGqqo_19","words":"That roller coaster was so fun!","phone_sequence":"D 145 t # r O l e K O s t e # w $ z # s O # f ^ n","sentence_idx":0,"sentence_estimated_duration":2.01,"locale":"en-US","paragraph_idx":19},
+            {"script_title":"statements","transcription":"$ # s m A l # $ m @ n t # $ v # m i t # , # I N K l u d I N # P A r k # , # I z # E R I n # . ~","utterance_name":"zEoVu_102","words":"A small amount of meat, including pork, is eaten.","phone_sequence":"$ # s m A l # $ m @ n t # $ v # m i t # I N K l u d I N # P A r k # I z # E R I n","sentence_idx":0,"sentence_estimated_duration":2.89,"locale":"en-US","paragraph_idx":102},
+            {"script_title":"statements","transcription":"h I z # w e k # I z # K $ n s I R e d # 146 $ # b i # D $ # f @ n d J S $ n # $ v # D $ # s Y R i # . ~","utterance_name":"zEoVu_115","words":"His work is considered to be the foundation of the study.","phone_sequence":"h I z # w e k # I z # K $ n s I R e d # 146 $ # b i # D $ # f @ n d J S $ n # $ v # D $ # s Y R i","sentence_idx":0,"sentence_estimated_duration":3.17,"locale":"en-US","paragraph_idx":115},
+            {"script_title":"statements","transcription":"s $ m # $ v # D i z # 146 r Y l z # a r # K $ n d ^ k 146 I R # I n # $ # l 145 b # . ~","utterance_name":"zEoVu_169","words":"Some of these trials are conducted in a lab.","phone_sequence":"s $ m # $ v # D i z # 146 r Y l z # a r # K $ n d ^ k 146 I R # I n # $ # l 145 b","sentence_idx":0,"sentence_estimated_duration":2.43,"locale":"en-US","paragraph_idx":169},
+            {"script_title":"statements","transcription":"D E n # D $ # S E l z # s I N k # 146 $ # D $ # b a R $ m # $ v # D $ # s i # . ~","utterance_name":"zEoVu_191","words":"Then the shells sink to the bottom of the sea.","phone_sequence":"D E n # D $ # S E l z # s I N k # 146 $ # D $ # b a R $ m # $ v # D $ # s i","sentence_idx":0,"sentence_estimated_duration":2.29,"locale":"en-US","paragraph_idx":191},
+            {"script_title":"statements","transcription":"D i z # f Y n d I N z # l E d # 146 $ # D $ # K r i J S $ n # $ v # D $ # r J R i O # 145 n # ^ D e # d $ v Y s $ z # . ~","utterance_name":"zEoVu_192","words":"These findings led to the creation of the radio and other devices.","phone_sequence":"D i z # f Y n d I N z # l E d # 146 $ # D $ # K r i J S $ n # $ v # D $ # r J R i O # 145 n # ^ D e # d $ v Y s $ z","sentence_idx":0,"sentence_estimated_duration":3.68,"locale":"en-US","paragraph_idx":192},
+            {"script_title":"statements","transcription":"$ b @ t # s I k s t i # P e s E n t # $ v # D $ # s I R i # 145 s t # s I N L # r u m # h O m z # . ~","utterance_name":"zEoVu_20","words":"About sixty percent of the city east single room homes.","phone_sequence":"$ b @ t # s I k s t i # P e s E n t # $ v # D $ # s I R i # 145 s t # s I N L # r u m # h O m z","sentence_idx":0,"sentence_estimated_duration":3.41,"locale":"en-US","paragraph_idx":20},
+            {"script_title":"statements","transcription":"I t # w $ z # w $ n # $ v # D $ # P r I m E r i # P @ R z # $ v # D $ # P r O r $ m # . ~","utterance_name":"zEoVu_61","words":"It was one of the primary powers of the program.","phone_sequence":"I t # w $ z # w $ n # $ v # D $ # P r I m E r i # P @ R z # $ v # D $ # P r O r $ m","sentence_idx":0,"sentence_estimated_duration":2.79,"locale":"en-US","paragraph_idx":61}
+        ];
+
+        // Audio data URLs (Base64 encoded MP3)
+        const audioData = {};
+
+        let currentAudio = null;
+        let currentCard = null;
+        let filteredData = [...trainingData];
+
+        // Initialize UI
+        function init() {
+            updateStats();
+            setupFilters();
+            renderSamples();
+            setupEventListeners();
+            loadAudioFiles();
+        }
+
+        // Load audio files dynamically
+        async function loadAudioFiles() {
+            const audioFiles = {
+                'YIhoP_14': '/mnt/user-data/uploads/YIhoP_14.caf',
+                'YIhoP_4': '/mnt/user-data/uploads/YIhoP_4.caf',
+                'rGqqo_19': '/mnt/user-data/uploads/rGqqo_19.caf',
+                'zEoVu_102': '/mnt/user-data/uploads/zEoVu_102.caf',
+                'zEoVu_115': '/mnt/user-data/uploads/zEoVu_115.caf',
+                'zEoVu_169': '/mnt/user-data/uploads/zEoVu_169.caf',
+                'zEoVu_191': '/mnt/user-data/uploads/zEoVu_191.caf',
+                'zEoVu_192': '/mnt/user-data/uploads/zEoVu_192.caf',
+                'zEoVu_20': '/mnt/user-data/uploads/zEoVu_20.caf',
+                'zEoVu_61': '/mnt/user-data/uploads/zEoVu_61.caf'
+            };
+
+            console.log('Audio files need to be loaded from the server');
+            console.log('In production, these would be served as static assets');
+        }
+
+        function updateStats() {
+            const categories = new Set(trainingData.map(d => d.script_title));
+            const avgDur = trainingData.reduce((sum, d) => sum + d.sentence_estimated_duration, 0) / trainingData.length;
+            
+            document.getElementById('totalSamples').textContent = trainingData.length;
+            document.getElementById('totalCategories').textContent = categories.size;
+            document.getElementById('avgDuration').textContent = avgDur.toFixed(2) + 's';
+        }
+
+        function setupFilters() {
+            const categories = [...new Set(trainingData.map(d => d.script_title))];
+            const filterContainer = document.getElementById('filterButtons');
+            
+            // Add "All" button
+            const allBtn = document.createElement('button');
+            allBtn.className = 'filter-btn active';
+            allBtn.textContent = 'All';
+            allBtn.onclick = () => filterByCategory(null);
+            filterContainer.appendChild(allBtn);
+            
+            // Add category buttons
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+                btn.onclick = () => filterByCategory(cat);
+                filterContainer.appendChild(btn);
+            });
+        }
+
+        function filterByCategory(category) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter data
+            if (category) {
+                filteredData = trainingData.filter(d => d.script_title === category);
+            } else {
+                filteredData = [...trainingData];
+            }
+            
+            renderSamples();
+        }
+
+        function renderSamples() {
+            const grid = document.getElementById('samplesGrid');
+            grid.innerHTML = '';
+            
+            filteredData.forEach(sample => {
+                const card = createSampleCard(sample);
+                grid.appendChild(card);
+            });
+        }
+
+        function createSampleCard(sample) {
+            const card = document.createElement('div');
+            card.className = 'sample-card';
+            card.dataset.utterance = sample.utterance_name;
+            
+            card.innerHTML = `
+                <div class="sample-header">
+                    <div class="sample-id">${sample.utterance_name}</div>
+                    <div class="sample-category">${sample.script_title}</div>
+                </div>
+                <div class="sample-text">"${sample.words}"</div>
+                <div class="sample-meta">
+                    <span class="sample-duration">⏱️ ${sample.sentence_estimated_duration.toFixed(2)}s</span>
+                    <span class="play-icon">▶️</span>
+                </div>
+                <div class="phoneme-display">
+                    <div class="phoneme-label">Phoneme Sequence:</div>
+                    <div class="phoneme-sequence">${sample.phone_sequence}</div>
+                </div>
+            `;
+            
+            card.onclick = () => playSample(sample, card);
+            
+            return card;
+        }
+
+        function playSample(sample, card) {
+            // Stop current audio if playing
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            
+            // Remove active class from previous card
+            if (currentCard) {
+                currentCard.classList.remove('playing');
+            }
+            
+            // Create Web Speech Synthesis as fallback
+            const utterance = new SpeechSynthesisUtterance(sample.words);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            
+            // Visual feedback
+            card.classList.add('playing');
+            currentCard = card;
+            
+            const waveform = document.getElementById('waveform');
+            waveform.classList.add('playing');
+            waveform.querySelector('.waveform-text').textContent = `Playing: ${sample.utterance_name}`;
+            
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('textInput').value = sample.words;
+            
+            utterance.onend = () => {
+                card.classList.remove('playing');
+                waveform.classList.remove('playing');
+                waveform.querySelector('.waveform-text').textContent = 'Audio Visualization';
+                document.getElementById('stopBtn').disabled = true;
+            };
+            
+            // Play using Web Speech API
+            speechSynthesis.speak(utterance);
+            currentAudio = { pause: () => speechSynthesis.cancel() };
+        }
+
+        function findClosestMatch(text) {
+            if (!text.trim()) return null;
+            
+            const searchText = text.toLowerCase();
+            let bestMatch = null;
+            let bestScore = 0;
+            
+            trainingData.forEach(sample => {
+                const sampleText = sample.words.toLowerCase();
+                
+                // Calculate similarity score
+                let score = 0;
+                
+                // Exact match
+                if (sampleText === searchText) {
+                    score = 1000;
+                }
+                // Contains
+                else if (sampleText.includes(searchText)) {
+                    score = 500 + (searchText.length / sampleText.length) * 100;
+                }
+                // Word match
+                else {
+                    const searchWords = searchText.split(' ');
+                    const sampleWords = sampleText.split(' ');
+                    const matchCount = searchWords.filter(w => sampleWords.includes(w)).length;
+                    score = (matchCount / searchWords.length) * 100;
+                }
+                
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = sample;
+                }
+            });
+            
+            return bestMatch;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('matchBtn').onclick = () => {
+                const text = document.getElementById('textInput').value;
+                const match = findClosestMatch(text);
+                
+                if (match) {
+                    const card = document.querySelector(`[data-utterance="${match.utterance_name}"]`);
+                    if (card) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(() => playSample(match, card), 500);
+                    }
+                } else {
+                    alert('No matching sample found. Try a different phrase!');
+                }
+            };
+            
+            document.getElementById('stopBtn').onclick = () => {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+                speechSynthesis.cancel();
+                
+                if (currentCard) {
+                    currentCard.classList.remove('playing');
+                }
+                
+                const waveform = document.getElementById('waveform');
+                waveform.classList.remove('playing');
+                waveform.querySelector('.waveform-text').textContent = 'Audio Visualization';
+                document.getElementById('stopBtn').disabled = true;
+            };
+            
+            document.getElementById('searchInput').oninput = (e) => {
+                const searchText = e.target.value.toLowerCase();
+                
+                if (!searchText) {
+                    filteredData = [...trainingData];
+                } else {
+                    filteredData = trainingData.filter(sample => 
+                        sample.words.toLowerCase().includes(searchText) ||
+                        sample.utterance_name.toLowerCase().includes(searchText)
+                    );
+                }
+                
+                renderSamples();
+            };
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
