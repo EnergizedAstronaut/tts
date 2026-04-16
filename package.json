@@ -1,15 +1,7 @@
 {
-  "name": "apple-tts-explorer",
-  "version": "2.0.0",
-  "description": "Apple TTS Sample Explorer with PDF Reader",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+  "name": "apple-tts-studio",
+  "version": "3.0.0",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18.0.0" },
+  "dependencies": { "express": "^4.18.2" }
 }
