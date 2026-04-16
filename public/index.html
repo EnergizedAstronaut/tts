@@ -18,8 +18,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);pointer-events:none;z-index:9999}
-
-/* ── HEADER ── */
 header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:50px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
 .logo{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12px;color:var(--amber);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite}
@@ -27,18 +25,12 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20p
 .hd{width:1px;height:22px;background:var(--border)}
 .stats-bar{display:flex;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim)}
 .stat span{color:var(--text-hi)}
-
-/* ── TABS ── */
 .tab-bar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;padding:0 20px;gap:2px;flex-shrink:0}
 .tab{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
 .tab:hover{color:var(--text)}
 .tab.active{color:var(--amber);border-bottom-color:var(--amber)}
-
-/* ── SHARED LAYOUT ── */
 .three-col{display:grid;grid-template-columns:240px 1fr 320px;height:calc(100vh - 98px)}
 .two-col{display:flex;height:calc(100vh - 98px)}
-
-/* ── SIDEBAR ── */
 .sidebar{border-right:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
 .sb-sec{padding:12px 14px 10px;border-bottom:1px solid var(--border)}
 .sb-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--text-dim);margin-bottom:8px}
@@ -60,14 +52,916 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20p
 .sb-btn.active{color:var(--amber);border-color:var(--amber)}
 .kb{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);line-height:2.2}
 .kb span{color:var(--text)}
-
-/* ── SAMPLE LIST ── */
 .main-panel{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .panel-hdr{height:36px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;background:var(--bg2);flex-shrink:0}
 .panel-title{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em}
 .pill{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-dim);padding:2px 7px}
 .sample-list{flex:1;overflow-y:auto}
 .sample-list::-webkit-scrollbar{width:5px}
+.sample-list::-webkit-scrollbar-thumb{background:var(--border)}
+.sr{display:grid;align-items:center;border-bottom:1px solid rgba(42,46,51,.5);padding:0 14px;height:48px;cursor:pointer;transition:background .1s;position:relative}
+.sr:hover{background:var(--bg2)}
+.sr.active{background:var(--amber-bg);border-left:2px solid var(--amber);padding-left:12px}
+.sr.playing{background:var(--green-bg);border-left:2px solid var(--green);padding-left:12px}
+.row-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim)}
+.row-id{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-cat{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em}
+.cat-exclamations{color:var(--red)}.cat-questions{color:var(--blue)}.cat-statements{color:var(--green)}.cat-common_phrases{color:var(--purple)}
+.row-text{font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 10px}
+.row-text mark{background:rgba(240,165,0,.25);color:var(--amber);font-weight:500}
+.row-dur{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-align:right}
+.play-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;display:none;align-items:center;justify-content:center;background:var(--amber);color:#000;font-size:8px}
+.sr:hover .play-icon,.sr.playing .play-icon{display:flex}
+.sr:hover .row-num,.sr.playing .row-num{opacity:0}
+.sr.playing .play-icon{background:var(--green);animation:pp .8s infinite}
+@keyframes pp{0%,100%{opacity:1}50%{opacity:.4}}
+.empty-s{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.detail-panel{border-left:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.dp-hdr{height:36px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;flex-shrink:0}
+.dp-title{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em}
+.dp-body{flex:1;overflow-y:auto;padding:14px}
+.dp-body::-webkit-scrollbar{width:4px}
+.dp-body::-webkit-scrollbar-thumb{background:var(--border)}
+.dp-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:11px;gap:6px}
+.df{margin-bottom:14px}
+.dl{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:var(--text-dim);margin-bottom:4px}
+.dv{font-size:13px;color:var(--text-hi);line-height:1.5}
+.dm{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text)}
+.dur-bar{background:var(--bg3);border:1px solid var(--border);height:5px;margin-bottom:14px;overflow:hidden}
+.dur-fill{height:100%;background:var(--amber);transition:width .3s}
+.ph-grid{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.ph{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 5px;background:var(--bg3);border:1px solid var(--border);color:var(--text)}
+.ph.wb{background:var(--amber-bg);border-color:var(--amber-dim);color:var(--amber)}
+.ph.sp{border-color:var(--blue);color:var(--blue);background:rgba(91,156,246,.08)}
+.ph.ss{border-color:#7dd3fc;color:#7dd3fc;background:rgba(125,211,252,.06)}
+.act-row{display:flex;gap:6px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.btn{flex:1;background:none;border:1px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:7px 0;cursor:pointer;text-align:center;text-transform:uppercase;letter-spacing:.06em;transition:all .15s}
+.btn:hover{border-color:var(--text-dim);color:var(--text-hi);background:var(--bg3)}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#000;font-weight:600}
+.btn.primary:hover{background:#d4900a}
+.btn.playing-btn{background:var(--green);border-color:var(--green);color:#000;animation:pp 1s infinite}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn.danger:hover{background:var(--red-bg)}
+.sim-item{display:flex;align-items:center;gap:7px;padding:6px 7px;border:1px solid transparent;cursor:pointer;transition:all .15s;margin-bottom:2px}
+.sim-item:hover{background:var(--bg3);border-color:var(--border)}
+.sim-score{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);width:26px;flex-shrink:0}
+.sim-text{font-size:11px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 6px;border-radius:2px;text-transform:uppercase;letter-spacing:.08em}
+.badge.approved{background:var(--green-bg);border:1px solid var(--green-dim);color:var(--green)}
+.badge.flagged{background:var(--red-bg);border:1px solid var(--red-dim);color:var(--red)}
+.badge.loaded{background:var(--amber-bg);border:1px solid var(--amber-dim);color:var(--amber)}
+.badge.synth{background:rgba(91,156,246,.08);border:1px solid rgba(91,156,246,.3);color:var(--blue)}
+.label-layout{display:grid;grid-template-columns:260px 1fr 360px;height:calc(100vh - 98px)}
+.upload-zone{border:2px dashed var(--border);padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:11px;margin-bottom:10px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+.upload-zone .uz-icon{font-size:26px;margin-bottom:6px;display:block}
+.label-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.lstat{background:var(--bg3);border:1px solid var(--border);padding:8px 10px;text-align:center}
+.lstat-num{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;line-height:1}
+.lstat-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
+.lstat-num.green{color:var(--green)}
+.lstat-num.red{color:var(--red)}
+.lstat-num.amber{color:var(--amber)}
+.lstat-num.blue{color:var(--blue)}
+.prog-wrap{background:var(--bg3);border:1px solid var(--border);height:6px;margin-bottom:10px;overflow:hidden;position:relative}
+.prog-fill{height:100%;transition:width .4s}
+.prog-approved{background:var(--green);position:absolute;left:0;top:0;height:100%}
+.prog-flagged{background:var(--red);position:absolute;top:0;height:100%}
+.lr{display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(42,46,51,.5);padding:8px 14px;cursor:pointer;transition:background .1s;position:relative}
+.lr:hover{background:var(--bg2)}
+.lr.active{background:var(--amber-bg);border-left:2px solid var(--amber);padding-left:12px}
+.lr-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lr-status.approved{background:var(--green)}
+.lr-status.flagged{background:var(--red)}
+.lr-status.loaded{background:var(--amber)}
+.lr-status.pending{background:var(--border)}
+.lr-info{flex:1;min-width:0}
+.lr-id{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim)}
+.lr-text{font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lr-audio{font-family:'IBM Plex Mono',monospace;font-size:10px;flex-shrink:0}
+.lr-audio.has-audio{color:var(--green)}
+.lr-audio.no-audio{color:var(--border)}
+.audio-player{background:var(--bg3);border:1px solid var(--border);padding:12px;margin-bottom:14px}
+.ap-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ap-play{width:36px;height:36px;background:var(--amber);border:none;color:#000;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.ap-play:hover{background:#d4900a}
+.ap-play.playing{background:var(--green);animation:pp 1s infinite}
+.ap-info{flex:1;min-width:0}
+.ap-name{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ap-type{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:2px}
+.ap-bar{background:var(--bg);border:1px solid var(--border);height:4px;position:relative;cursor:pointer}
+.ap-prog{height:100%;background:var(--amber);transition:width .1s linear;pointer-events:none}
+.label-edit{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text-hi);font-size:13px;padding:10px 12px;outline:none;resize:vertical;min-height:60px;font-family:'IBM Plex Sans',sans-serif;line-height:1.5;transition:border-color .2s;margin-bottom:8px}
+.label-edit:focus{border-color:var(--amber)}
+.label-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.la-btn{border:1px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:8px 0;cursor:pointer;text-align:center;text-transform:uppercase;letter-spacing:.06em;transition:all .15s;background:none}
+.la-btn:hover{background:var(--bg3)}
+.la-btn.approve{border-color:var(--green-dim);color:var(--green)}
+.la-btn.approve:hover{background:var(--green-bg)}
+.la-btn.approve.active{background:var(--green-bg);border-color:var(--green)}
+.la-btn.flag{border-color:var(--red-dim);color:var(--red)}
+.la-btn.flag:hover{background:var(--red-bg)}
+.la-btn.flag.active{background:var(--red-bg);border-color:var(--red)}
+.la-btn.reset{border-color:var(--border);color:var(--text-dim)}
+.export-btn{width:100%;background:var(--amber);border:none;color:#000;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:10px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em;transition:background .15s}
+.export-btn:hover{background:#d4900a}
+.export-btn:disabled{opacity:.4;cursor:not-allowed}
+.pdf-layout{display:flex;height:calc(100vh - 98px)}
+.pdf-sb{width:280px;border-right:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0}
+.pdf-ctrl{padding:14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.drop-zone{border:2px dashed var(--border);padding:22px 14px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:11px}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+.drop-zone .dz-icon{font-size:26px;margin-bottom:6px;display:block}
+.pdf-info{background:var(--bg3);border:1px solid var(--border);padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px}
+.pi-row{display:flex;justify-content:space-between;margin-bottom:3px}
+.pi-row span:first-child{color:var(--text-dim)}
+.pi-row span:last-child{color:var(--text-hi)}
+.speed-row{display:flex;align-items:center;gap:8px}
+.sp-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);width:48px}
+#speedSlider{flex:1;accent-color:var(--amber)}
+#speedVal{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);width:32px;text-align:right}
+.vc-sel{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text-hi);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:5px 8px;outline:none}
+.vc-sel:focus{border-color:var(--amber)}
+.pdf-btn-row{display:flex;gap:6px}
+.pb{flex:1;background:none;border:1px solid var(--border);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:7px 0;cursor:pointer;text-align:center;text-transform:uppercase;letter-spacing:.06em;transition:all .15s}
+.pb:hover{background:var(--bg3);border-color:var(--text-dim)}
+.pb.primary{background:var(--amber);border-color:var(--amber);color:#000;font-weight:600}
+.pb.primary:hover{background:#d4900a}
+.pb.stop-btn{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.pb:disabled{opacity:.35;cursor:not-allowed}
+.sent-nav{flex:1;overflow-y:auto;padding:10px}
+.sent-nav::-webkit-scrollbar{width:4px}
+.sent-nav::-webkit-scrollbar-thumb{background:var(--border)}
+.sn-item{font-size:11px;color:var(--text-dim);line-height:1.5;padding:5px 8px;margin-bottom:2px;border-left:2px solid transparent;cursor:pointer;transition:all .2s}
+.sn-item:hover{color:var(--text);background:rgba(255,255,255,.02)}
+.sn-item.active{color:var(--text-hi);border-left-color:var(--amber);background:var(--amber-bg)}
+.pdf-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.pdf-prog{height:3px;background:var(--bg3);flex-shrink:0}
+.pdf-prog-fill{height:100%;background:var(--amber);transition:width .3s}
+.pdf-rhdr{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg2)}
+.pdf-fname{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdf-pinfo{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim)}
+.pdf-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;gap:10px}
+.pdf-empty-icon{font-size:48px;opacity:.15}
+.pdf-content{flex:1;overflow-y:auto;padding:20px 24px;font-size:14px;line-height:1.85}
+.pdf-content::-webkit-scrollbar{width:5px}
+.pdf-content::-webkit-scrollbar-thumb{background:var(--border)}
+.sent{color:var(--text-dim);padding:6px 10px;margin-bottom:2px;border-left:2px solid transparent;cursor:pointer;transition:all .2s}
+.sent:hover{color:var(--text);background:rgba(255,255,255,.02)}
+.sent.active-sent{color:var(--text-hi);border-left-color:var(--amber);background:var(--amber-bg)}
+.word{display:inline}
+.word.spoken{color:var(--amber-dim)}
+.word.current-word{color:#fff;background:var(--amber);padding:0 2px;border-radius:2px}
+.status-bar{position:fixed;bottom:0;left:0;right:0;height:24px;background:var(--amber);display:flex;align-items:center;padding:0 14px;gap:14px;z-index:200}
+.si2{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#000;display:flex;align-items:center;gap:4px}
+.sk{background:rgba(0,0,0,.15);padding:0 4px;font-weight:600}
+#statusMsg{flex:1;text-align:center;font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#000}
+#playingLabel{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#000;font-weight:600}
+.toast{position:fixed;top:64px;right:16px;background:var(--bg3);border:1px solid var(--amber);color:var(--amber);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 13px;z-index:9000;opacity:0;transform:translateY(-8px);transition:all .2s;pointer-events:none;max-width:300px}
+.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:900px){.three-col,.label-layout{grid-template-columns:200px 1fr}.detail-panel{display:none}}
+@media(max-width:600px){.three-col,.label-layout{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-dot"></div>APPLE TTS · STUDIO</div>
+  <div class="hd"></div>
+  <div class="stats-bar">
+    <div class="stat">SAMPLES <span id="totalCount">0</span></div>
+    <div class="stat">TOTAL <span id="totalDur">–</span></div>
+    <div class="stat">LABELED <span id="labeledCount">0</span>/150</div>
+    <div class="stat">CACHED <span id="cacheCount">0</span></div>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <div class="tab active" data-tab="samples">📋 SAMPLES</div>
+  <div class="tab" data-tab="label">🏷️ LABEL</div>
+  <div class="tab" data-tab="pdf">📄 PDF READER</div>
+</div>
+
+<!-- SAMPLES TAB -->
+<div id="samplesTab" class="three-col" style="padding-bottom:24px">
+  <aside class="sidebar">
+    <div class="sb-sec">
+      <div class="sb-lbl">Search</div>
+      <div class="search-wrap">
+        <span class="si">⌕</span>
+        <input type="text" id="searchInput" class="search-inp" placeholder="Search samples..." autocomplete="off" spellcheck="false">
+        <span id="searchCount" class="sc"></span>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-lbl">Category</div>
+      <div class="filters" id="filterBtns">
+        <button class="fb active" data-cat="all">ALL <span class="fc" id="fc-all">0</span></button>
+        <button class="fb" data-cat="exclamations">EXCLAMATIONS <span class="fc" id="fc-exclamations">0</span></button>
+        <button class="fb" data-cat="questions">QUESTIONS <span class="fc" id="fc-questions">0</span></button>
+        <button class="fb" data-cat="statements">STATEMENTS <span class="fc" id="fc-statements">0</span></button>
+        <button class="fb" data-cat="common_phrases">PHRASES <span class="fc" id="fc-common_phrases">0</span></button>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-lbl">Sort</div>
+      <div class="sort-row">
+        <button class="sb-btn active" data-sort="idx">IDX</button>
+        <button class="sb-btn" data-sort="dur">DUR</button>
+        <button class="sb-btn" data-sort="az">A→Z</button>
+      </div>
+    </div>
+    <div class="sb-sec" style="border-bottom:none;flex:1">
+      <div class="sb-lbl">Shortcuts</div>
+      <div class="kb">
+        <div><span>↑ ↓</span>  Navigate</div>
+        <div><span>ENTER</span>  Play</div>
+        <div><span>SPACE</span>  Stop/Play</div>
+        <div><span>ESC</span>   Stop</div>
+        <div><span>/</span>    Search</div>
+      </div>
+    </div>
+  </aside>
+  <main class="main-panel">
+    <div class="panel-hdr">
+      <span class="panel-title">Sample List</span>
+      <span class="pill" id="resultPill">0 results</span>
+    </div>
+    <div id="sampleList" class="sample-list"></div>
+  </main>
+  <aside class="detail-panel">
+    <div class="dp-hdr"><span class="dp-title">Sample Detail</span></div>
+    <div class="dp-body" id="detailBody">
+      <div class="dp-empty"><div style="font-size:26px;opacity:.2">◈</div><div>Select a sample</div></div>
+    </div>
+  </aside>
+</div>
+
+<!-- LABEL TAB -->
+<div id="labelTab" class="label-layout" style="display:none;padding-bottom:24px">
+  <aside class="sidebar">
+    <div class="sb-sec">
+      <div class="sb-lbl">Upload Audio Files</div>
+      <div class="upload-zone" id="uploadZone">
+        <span class="uz-icon">🎤</span>
+        <div>Drop .caf / .mp3 / .wav files</div>
+        <div style="margin-top:4px;font-size:10px;color:var(--text-dim)">Named by utterance ID</div>
+        <input type="file" id="audioInput" accept=".caf,.mp3,.wav,.m4a,.aiff,.aif,.ogg" multiple style="display:none">
+      </div>
+      <div class="label-stats">
+        <div class="lstat"><div class="lstat-num amber" id="ls-loaded">0</div><div class="lstat-lbl">Loaded</div></div>
+        <div class="lstat"><div class="lstat-num" id="ls-total">150</div><div class="lstat-lbl">Total</div></div>
+        <div class="lstat"><div class="lstat-num green" id="ls-approved">0</div><div class="lstat-lbl">Approved</div></div>
+        <div class="lstat"><div class="lstat-num red" id="ls-flagged">0</div><div class="lstat-lbl">Flagged</div></div>
+      </div>
+      <div class="prog-wrap" style="height:8px;margin-bottom:10px;position:relative">
+        <div class="prog-approved" id="prog-approved" style="width:0%"></div>
+        <div class="prog-flagged" id="prog-flagged" style="width:0%;left:0"></div>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-lbl">Filter</div>
+      <div class="filters" id="labelFilterBtns">
+        <button class="fb active" data-lf="all">ALL <span class="fc" id="lfc-all">0</span></button>
+        <button class="fb" data-lf="loaded">HAS AUDIO <span class="fc" id="lfc-loaded">0</span></button>
+        <button class="fb" data-lf="pending">PENDING <span class="fc" id="lfc-pending">0</span></button>
+        <button class="fb" data-lf="approved">APPROVED <span class="fc" id="lfc-approved">0</span></button>
+        <button class="fb" data-lf="flagged">FLAGGED <span class="fc" id="lfc-flagged">0</span></button>
+      </div>
+    </div>
+    <div class="sb-sec" style="border-bottom:none;flex:1;display:flex;flex-direction:column;justify-content:flex-end">
+      <button class="export-btn" id="exportBtn" onclick="exportLabels()">⬇ Export metadata.json</button>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:8px;line-height:1.7">
+        Files named: <span style="color:var(--amber)">utterance_id.caf</span><br>
+        e.g. rGqqo_0.caf → rGqqo_0<br>
+        Browsers play: mp3, wav, m4a<br>
+        Safari also plays: caf, aiff
+      </div>
+    </div>
+  </aside>
+  <main class="main-panel">
+    <div class="panel-hdr">
+      <span class="panel-title">All Samples</span>
+      <span class="pill" id="labelPill">0 shown</span>
+      <div style="flex:1"></div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim)">CLICK TO SELECT · DBLCLICK TO PLAY</span>
+    </div>
+    <div id="labelList" class="sample-list"></div>
+  </main>
+  <aside class="detail-panel" style="width:360px">
+    <div class="dp-hdr">
+      <span class="dp-title">Label Editor</span>
+      <div style="flex:1"></div>
+      <span id="labelNavInfo" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim)"></span>
+    </div>
+    <div class="dp-body" id="labelEditor">
+      <div class="dp-empty"><div style="font-size:26px;opacity:.2">🏷️</div><div>Select a sample to label</div><div style="font-size:10px;margin-top:4px;color:var(--text-dim)">Upload .caf files to enable real audio</div></div>
+    </div>
+  </aside>
+</div>
+
+<!-- PDF TAB -->
+<div id="pdfTab" class="pdf-layout" style="display:none;padding-bottom:24px">
+  <div class="pdf-sb">
+    <div class="pdf-ctrl">
+      <div class="drop-zone" id="pdfDropZone">
+        <span class="dz-icon">📄</span>
+        <div>Drop a PDF here</div>
+        <div style="margin-top:4px;font-size:10px;color:var(--text-dim)">or click to browse</div>
+        <input type="file" id="pdfInput" accept=".pdf" style="display:none">
+      </div>
+      <div class="pdf-info" id="pdfInfo" style="display:none">
+        <div class="pi-row"><span>FILE</span><span id="pdfName" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">–</span></div>
+        <div class="pi-row"><span>PAGES</span><span id="pdfPages">–</span></div>
+        <div class="pi-row"><span>SENTENCES</span><span id="pdfSents">–</span></div>
+        <div class="pi-row"><span>PROGRESS</span><span id="pdfPct">0%</span></div>
+      </div>
+      <div class="speed-row">
+        <span class="sp-lbl">SPEED</span>
+        <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="1">
+        <span id="speedVal">1.0×</span>
+      </div>
+      <div>
+        <div class="sb-lbl" style="margin-bottom:5px">VOICE</div>
+        <select class="vc-sel" id="voiceSelect"></select>
+      </div>
+      <div class="pdf-btn-row">
+        <button class="pb primary" id="pdfPlayBtn" disabled>▶ PLAY</button>
+        <button class="pb" id="pdfPauseBtn" disabled>⏸</button>
+        <button class="pb stop-btn" id="pdfStopBtn" disabled>■</button>
+      </div>
+    </div>
+    <div class="sb-lbl" style="padding:10px 14px 6px;border-top:1px solid var(--border)">SENTENCES <span id="sentCountBadge" style="color:var(--amber)"></span></div>
+    <div class="sent-nav" id="sentenceNav"></div>
+  </div>
+  <div class="pdf-main">
+    <div class="pdf-prog"><div class="pdf-prog-fill" id="pdfProgFill" style="width:0%"></div></div>
+    <div class="pdf-rhdr" id="pdfRHdr" style="display:none">
+      <div class="pdf-fname" id="pdfFilename"></div>
+      <div class="pdf-pinfo" id="pdfPageInfo"></div>
+    </div>
+    <div class="pdf-empty" id="pdfEmpty">
+      <div class="pdf-empty-icon">📄</div>
+      <div>Upload a PDF to read it aloud</div>
+      <div style="font-size:10px;margin-top:4px">Word-by-word highlighting · Voice &amp; speed controls</div>
+    </div>
+    <div id="pdfContent" class="pdf-content" style="display:none"></div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="si2"><span class="sk">/</span> SEARCH</div>
+  <div class="si2"><span class="sk">↑↓</span> NAV</div>
+  <div class="si2"><span class="sk">↵</span> PLAY</div>
+  <div id="statusMsg">Ready</div>
+  <div id="playingLabel"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
+
+<!-- ✅ FIX: RAW_DATA is now properly wrapped in a <script> tag -->
+<script>
+const RAW_DATA = [{"script_title":"exclamations","transcription":"w ^ t # d u # b E r z # l Y k # b E s t # . # h ^ n i # ! ~","utterance_name":"rGqqo_0","words":"What do bears like best? Honey!","phone_sequence":"w ^ t # d u # b E r z # l Y k # b E s t # h ^ n i","sentence_idx":0,"sentence_estimated_duration":2.19,"locale":"en-US","paragraph_idx":0},{"script_title":"exclamations","transcription":"j ^ k # ! # D E r # a r # l ^ m p s # I n # m Y # f u d # ! ~","utterance_name":"rGqqo_2","words":"Yuck! There are lumps in my food!","phone_sequence":"j ^ k # D E r # a r # l ^ m p s # I n # m Y # f u d","sentence_idx":0,"sentence_estimated_duration":2.19,"locale":"en-US","paragraph_idx":2},{"script_title":"exclamations","transcription":"D $ # G E n 146 L m $ n # w I T # D $ # f 145 n # E k s k l J m d # , # g U d # m A r n I N # . ~","utterance_name":"rGqqo_9","words":"The gentleman with the fan exclaimed, \u201cGood morning!\u201d","phone_sequence":"D $ # G E n 146 L m $ n # w I T # D $ # f 145 n # E k s k l J m d # g U d # m A r n I N","sentence_idx":0,"sentence_estimated_duration":2.91,"locale":"en-US","paragraph_idx":9},{"script_title":"exclamations","transcription":"h I z # m ^ D e # g 145 s p t # , # m Y # g U d n I s # . # D 145 t # w $ z # d J n G $ r $ s # . ~","utterance_name":"rGqqo_13","words":"His mother gasped, \u201cMy goodness. That was dangerous!\u201d","phone_sequence":"h I z # m ^ D e # g 145 s p t # m Y # g U d n I s # D 145 t # w $ z # d J n G $ r $ s","sentence_idx":0,"sentence_estimated_duration":3.43,"locale":"en-US","paragraph_idx":13},{"script_title":"exclamations","transcription":"D E n # D i # ^ m P Y r # j E l d # , # s t r Y k # T r i # ! # j e # @ t # . ~","utterance_name":"rGqqo_14","words":"Then the umpire yelled, \u201cStrike three! You\u2019re out!\u201d","phone_sequence":"D E n # D i # ^ m P Y r # j E l d # s t r Y k # T r i # j e # @ t","sentence_idx":0,"sentence_estimated_duration":3.31,"locale":"en-US","paragraph_idx":14},{"script_title":"exclamations","transcription":"Y # K 145 n t # b I l i v # Y # w ^ n # D $ # l a R e i # ! ~","utterance_name":"rGqqo_18","words":"I can\u2019t believe I won the lottery!","phone_sequence":"Y # K 145 n t # b I l i v # Y # w ^ n # D $ # l a R e i","sentence_idx":0,"sentence_estimated_duration":1.74,"locale":"en-US","paragraph_idx":18},{"script_title":"exclamations","transcription":"D 145 t # r O l e K O s t e # w $ z # s O # f ^ n # ! ~","utterance_name":"rGqqo_19","words":"That roller coaster was so fun!","phone_sequence":"D 145 t # r O l e K O s t e # w $ z # s O # f ^ n","sentence_idx":0,"sentence_estimated_duration":2.01,"locale":"en-US","paragraph_idx":19},{"script_title":"exclamations","transcription":"D 145 t # w $ z # D $ # b E s t # m u v i # Y v # E v e # s i n # ! ~","utterance_name":"rGqqo_21","words":"That was the best movie I\u2019ve ever seen!","phone_sequence":"D 145 t # w $ z # D $ # b E s t # m u v i # Y v # E v e # s i n","sentence_idx":0,"sentence_estimated_duration":2.32,"locale":"en-US","paragraph_idx":21},{"script_title":"exclamations","transcription":"Y # K 145 n t # b I l i v # j u # d I d # D 145 t # ! ~","utterance_name":"rGqqo_23","words":"I can\u2019t believe you did that!","phone_sequence":"Y # K 145 n t # b I l i v # j u # d I d # D 145 t","sentence_idx":0,"sentence_estimated_duration":1.48,"locale":"en-US","paragraph_idx":23},{"script_title":"exclamations","transcription":"K ^ m # b 145 k # I n s Y d # r Y t # n @ # ! ~","utterance_name":"rGqqo_24","words":"Come back inside right now!","phone_sequence":"K ^ m # b 145 k # I n s Y d # r Y t # n @","sentence_idx":0,"sentence_estimated_duration":1.69,"locale":"en-US","paragraph_idx":24},{"script_title":"exclamations","transcription":"@ C # ! # D 145 R # I z # r i l i # h a t # ! ~","utterance_name":"rGqqo_25","words":"Ouch! That is really hot!","phone_sequence":"@ C # D 145 R # I z # r i l i # h a t","sentence_idx":0,"sentence_estimated_duration":1.87,"locale":"en-US","paragraph_idx":25},{"script_title":"exclamations","transcription":"A # ! # D 145 t # P ^ P i # I z # s O # 146 Y n i # 145 n # K j u t # ! ~","utterance_name":"rGqqo_29","words":"Aww! That puppy is so tiny and cute!","phone_sequence":"A # D 145 t # P ^ P i # I z # s O # 146 Y n i # 145 n # K j u t","sentence_idx":0,"sentence_estimated_duration":2.83,"locale":"en-US","paragraph_idx":29},{"script_title":"questions","transcription":"I z # m Y 145 m i # D $ # K 145 P $ R L # $ v # f l A r I R $ # ? ~","utterance_name":"YIhoP_4","words":"Is Miami the capital of Florida?","phone_sequence":"I z # m Y 145 m i # D $ # K 145 P $ R L # $ v # f l A r I R $","sentence_idx":0,"sentence_estimated_duration":2.03,"locale":"en-US","paragraph_idx":4},{"script_title":"questions","transcription":"d u # j u # n O # w ^ t # 146 Y m # D $ # m i R I N # s t a r t s # ? ~","utterance_name":"YIhoP_5","words":"Do you know what time the meeting starts?","phone_sequence":"d u # j u # n O # w ^ t # 146 Y m # D $ # m i R I N # s t a r t s","sentence_idx":0,"sentence_estimated_duration":1.97,"locale":"en-US","paragraph_idx":5},{"script_title":"questions","transcription":"K U d # w i # m i t # n E k s t # w i k # a n # i D e # T e z d J # A r # f r Y R J # ? ~","utterance_name":"YIhoP_6","words":"Could we meet next week on either Thursday or Friday?","phone_sequence":"K U d # w i # m i t # n E k s t # w i k # a n # i D e # T e z d J # A r # f r Y R J","sentence_idx":0,"sentence_estimated_duration":3.13,"locale":"en-US","paragraph_idx":6},{"script_title":"questions","transcription":"w ^ R # I f # w i # m u v d # D $ # m i R I N # 146 $ # n E k s t # m ^ n T # . ~","utterance_name":"YIhoP_9","words":"What if we moved the meeting to next month?","phone_sequence":"w ^ R # I f # w i # m u v d # D $ # m i R I N # 146 $ # n E k s t # m ^ n T","sentence_idx":0,"sentence_estimated_duration":2.11,"locale":"en-US","paragraph_idx":9},{"script_title":"questions","transcription":"I z # D 145 t # s ^ m T I N # j u # w U d # w a n t # 146 $ # 146 r Y # ? ~","utterance_name":"YIhoP_10","words":"Is that something you would want to try?","phone_sequence":"I z # D 145 t # s ^ m T I N # j u # w U d # w a n t # 146 $ # 146 r Y","sentence_idx":0,"sentence_estimated_duration":1.92,"locale":"en-US","paragraph_idx":10},{"script_title":"questions","transcription":"I z $ n t # S i # D $ # f ^ n i I s t # P e s $ n # j u v # E v e # m E t # ? ~","utterance_name":"YIhoP_11","words":"Isn\u2019t she the funniest person you\u2019ve ever met?","phone_sequence":"I z $ n t # S i # D $ # f ^ n i I s t # P e s $ n # j u v # E v e # m E t","sentence_idx":0,"sentence_estimated_duration":2.26,"locale":"en-US","paragraph_idx":11},{"script_title":"questions","transcription":"w e # D J # 146 r 145 v L I N # 146 $ g E D e # ? ~","utterance_name":"YIhoP_14","words":"Were they traveling together?","phone_sequence":"w e # D J # 146 r 145 v L I N # 146 $ g E D e","sentence_idx":0,"sentence_estimated_duration":1.46,"locale":"en-US","paragraph_idx":14},{"script_title":"questions","transcription":"d u # j u # n O # h u # D $ # P r E z I R $ n t # w $ z # I n # n Y n 146 i n # s I k s t i 146 u # ? ~","utterance_name":"YIhoP_20","words":"Do you know who the president was in nineteen sixty-two?","phone_sequence":"d u # j u # n O # h u # D $ # P r E z I R $ n t # w $ z # I n # n Y n 146 i n # s I k s t i 146 u","sentence_idx":0,"sentence_estimated_duration":2.79,"locale":"en-US","paragraph_idx":20},{"script_title":"questions","transcription":"w U d # j u # r 145 D e # g O # 146 $ # D $ # b i C # , # A r # 146 J k # $ # h Y k # I n # D $ # m @ n t 164 z # ? ~","utterance_name":"YIhoP_21","words":"Would you rather go to the beach, or take a hike in the mountains?","phone_sequence":"w U d # j u # r 145 D e # g O # 146 $ # D $ # b i C # A r # 146 J k # $ # h Y k # I n # D $ # m @ n t 164 z","sentence_idx":0,"sentence_estimated_duration":3.21,"locale":"en-US","paragraph_idx":21},{"script_title":"questions","transcription":"d I d # j u # A l r E R i # i t # b r E k f $ s t # ? ~","utterance_name":"YIhoP_25","words":"Did you already eat breakfast?","phone_sequence":"d I d # j u # A l r E R i # i t # b r E k f $ s t","sentence_idx":0,"sentence_estimated_duration":1.55,"locale":"en-US","paragraph_idx":25},{"script_title":"questions","transcription":"a r # j u # s t I l # h ^ N g r i # ? ~","utterance_name":"YIhoP_26","words":"Are you still hungry?","phone_sequence":"a r # j u # s t I l # h ^ N g r i","sentence_idx":0,"sentence_estimated_duration":1.25,"locale":"en-US","paragraph_idx":26},{"script_title":"questions","transcription":"w U d # j u # l Y k # E n i # 146 O s t # w I T # j e # s k r 145 m b $ l d # E g z # ? ~","utterance_name":"YIhoP_27","words":"Would you like any toast with your scrambled eggs?","phone_sequence":"w U d # j u # l Y k # E n i # 146 O s t # w I T # j e # s k r 145 m b $ l d # E g z","sentence_idx":0,"sentence_estimated_duration":2.37,"locale":"en-US","paragraph_idx":27},{"script_title":"questions","transcription":"Y # n O # j u # P l J # g A l f # , # b ^ t # h 145 v # j u # E v e # 146 r Y d # b J s b A l # ? ~","utterance_name":"YIhoP_30","words":"I know you play golf, but have you ever tried baseball?","phone_sequence":"Y # n O # j u # P l J # g A l f # b ^ t # h 145 v # j u # E v e # 146 r Y d # b J s b A l","sentence_idx":0,"sentence_estimated_duration":3.17,"locale":"en-US","paragraph_idx":30},{"script_title":"questions","transcription":"K 145 n # j u # 146 E k s t # m i # w ^ n s # j u # g E t # 146 $ # D $ # r E s t e a n t # ? ~","utterance_name":"YIhoP_32","words":"Can you text me once you get to the restaurant?","phone_sequence":"K 145 n # j u # 146 E k s t # m i # w ^ n s # j u # g E t # 146 $ # D $ # r E s t e a n t","sentence_idx":0,"sentence_estimated_duration":2.36,"locale":"en-US","paragraph_idx":32},{"script_title":"questions","transcription":"a r # j u # g O I N # 146 $ # f I n I S # D O z # f r Y z # ? ~","utterance_name":"YIhoP_34","words":"Are you going to finish those fries?","phone_sequence":"a r # j u # g O I N # 146 $ # f I n I S # D O z # f r Y z","sentence_idx":0,"sentence_estimated_duration":1.96,"locale":"en-US","paragraph_idx":34},{"script_title":"questions","transcription":"K 145 n # j u # m J k # P a p K A r n # w Y l # w i r # w a C I N # D $ # m u v i # ? ~","utterance_name":"YIhoP_35","words":"Can you make popcorn while we\u2019re watching the movie?","phone_sequence":"K 145 n # j u # m J k # P a p K A r n # w Y l # w i r # w a C I N # D $ # m u v i","sentence_idx":0,"sentence_estimated_duration":2.56,"locale":"en-US","paragraph_idx":35},{"script_title":"questions","transcription":"w Y l # Y # 146 J k # D I s # K A l # , # K U d # j u # w a C # m Y # s t ^ f # ? ~","utterance_name":"YIhoP_37","words":"While I take this call, could you watch my stuff?","phone_sequence":"w Y l # Y # 146 J k # D I s # K A l # K U d # j u # w a C # m Y # s t ^ f","sentence_idx":0,"sentence_estimated_duration":2.87,"locale":"en-US","paragraph_idx":37},{"script_title":"questions","transcription":"w Y l # j u # w a C # 146 i v i # , # d u # j u # l Y k # 146 $ # s n 145 k # ? ~","utterance_name":"YIhoP_39","words":"While you watch TV, do you like to snack?","phone_sequence":"w Y l # j u # w a C # 146 i v i # d u # j u # l Y k # 146 $ # s n 145 k","sentence_idx":0,"sentence_estimated_duration":2.42,"locale":"en-US","paragraph_idx":39},{"script_title":"questions","transcription":"a r # j u # r E R i # 146 $ # g O # ? ~","utterance_name":"YIhoP_40","words":"Are you ready to go?","phone_sequence":"a r # j u # r E R i # 146 $ # g O","sentence_idx":0,"sentence_estimated_duration":1.18,"locale":"en-US","paragraph_idx":40},{"script_title":"questions","transcription":"d I d # j u # r I m E m b e # 146 $ # 146 J k # @ t # D $ # 146 r 145 S # ? ~","utterance_name":"YIhoP_43","words":"Did you remember to take out the trash?","phone_sequence":"d I d # j u # r I m E m b e # 146 $ # 146 J k # @ t # D $ # 146 r 145 S","sentence_idx":0,"sentence_estimated_duration":2.04,"locale":"en-US","paragraph_idx":43},{"script_title":"questions","transcription":"K U d # j u # r i m Y n d # m i # I n # 146 w E n i # m I n I t s # ? ~","utterance_name":"YIhoP_47","words":"Could you remind me in twenty minutes?","phone_sequence":"K U d # j u # r i m Y n d # m i # I n # 146 w E n i # m I n I t s","sentence_idx":0,"sentence_estimated_duration":1.83,"locale":"en-US","paragraph_idx":47},{"script_title":"questions","transcription":"K 145 n # w i # l i v # n @ # ? ~","utterance_name":"YIhoP_48","words":"Can we leave now?","phone_sequence":"K 145 n # w i # l i v # n @","sentence_idx":0,"sentence_estimated_duration":1.24,"locale":"en-US","paragraph_idx":48},{"script_title":"questions","transcription":"d u # D J # n i R # $ # f j u # m A r # m I n I t s # ? ~","utterance_name":"YIhoP_56","words":"Do they need a few more minutes?","phone_sequence":"d u # D J # n i R # $ # f j u # m A r # m I n I t s","sentence_idx":0,"sentence_estimated_duration":1.7,"locale":"en-US","paragraph_idx":56},{"script_title":"questions","transcription":"h 145 v # j u # f I n I S t # j e # h O m w e k # ? ~","utterance_name":"YIhoP_58","words":"Have you finished your homework?","phone_sequence":"h 145 v # j u # f I n I S t # j e # h O m w e k","sentence_idx":0,"sentence_estimated_duration":1.64,"locale":"en-US","paragraph_idx":58},{"script_title":"questions","transcription":"a r # j u # r E R i # f e # D $ # b J s b A l # g J m # ? ~","utterance_name":"YIhoP_60","words":"Are you ready for the baseball game?","phone_sequence":"a r # j u # r E R i # f e # D $ # b J s b A l # g J m","sentence_idx":0,"sentence_estimated_duration":1.76,"locale":"en-US","paragraph_idx":60},{"script_title":"questions","transcription":"w U d # j u # P l i z # K l O s # D $ # d A r # ? ~","utterance_name":"YIhoP_61","words":"Would you please close the door?","phone_sequence":"w U d # j u # P l i z # K l O s # D $ # d A r","sentence_idx":0,"sentence_estimated_duration":1.57,"locale":"en-US","paragraph_idx":61},{"script_title":"questions","transcription":"d I d # j u # i R # A l # j e # b r a K $ l i # ? ~","utterance_name":"YIhoP_63","words":"Did you eat all your broccoli?","phone_sequence":"d I d # j u # i R # A l # j e # b r a K $ l i","sentence_idx":0,"sentence_estimated_duration":1.58,"locale":"en-US","paragraph_idx":63},{"script_title":"questions","transcription":"K U d # j u # K ^ m # b 145 k # I n # $ b @ R # $ n # @ e # ? ~","utterance_name":"YIhoP_66","words":"Could you come back in about an hour?","phone_sequence":"K U d # j u # K ^ m # b 145 k # I n # $ b @ R # $ n # @ e","sentence_idx":0,"sentence_estimated_duration":1.84,"locale":"en-US","paragraph_idx":66},{"script_title":"questions","transcription":"S U d # j u # r i l i # l i v # j e # S u z # a n # D $ # s t E r z # ? ~","utterance_name":"YIhoP_67","words":"Should you really leave your shoes on the stairs?","phone_sequence":"S U d # j u # r i l i # l i v # j e # S u z # a n # D $ # s t E r z","sentence_idx":0,"sentence_estimated_duration":2.22,"locale":"en-US","paragraph_idx":67},{"script_title":"questions","transcription":"a r # D J # $ # K ^ P L # n @ # ? ~","utterance_name":"YIhoP_70","words":"Are they a couple now?","phone_sequence":"a r # D J # $ # K ^ P L # n @","sentence_idx":0,"sentence_estimated_duration":1.26,"locale":"en-US","paragraph_idx":70},{"script_title":"questions","transcription":"d ^ z $ n t # S i # l U k # G ^ s t # l Y k # j e # m ^ D e # ? ~","utterance_name":"YIhoP_74","words":"Doesn\u2019t she look just like your mother?","phone_sequence":"d ^ z $ n t # S i # l U k # G ^ s t # l Y k # j e # m ^ D e","sentence_idx":0,"sentence_estimated_duration":1.88,"locale":"en-US","paragraph_idx":74},{"script_title":"questions","transcription":"h 145 v # j u # E v e # 146 r Y d # j O g $ # ? ~","utterance_name":"YIhoP_77","words":"Have you ever tried yoga?","phone_sequence":"h 145 v # j u # E v e # 146 r Y d # j O g $","sentence_idx":0,"sentence_estimated_duration":1.45,"locale":"en-US","paragraph_idx":77},{"script_title":"questions","transcription":"a r # j u # a n # j e # w J # ? ~","utterance_name":"YIhoP_79","words":"Are you on your way?","phone_sequence":"a r # j u # a n # j e # w J","sentence_idx":0,"sentence_estimated_duration":1.16,"locale":"en-US","paragraph_idx":79},{"script_title":"questions","transcription":"K 145 n # j u # b r I N # D i z # b U k s # b 145 k # 146 $ # D $ # l Y b r E r i # ? ~","utterance_name":"YIhoP_80","words":"Can you bring these books back to the library?","phone_sequence":"K 145 n # j u # b r I N # D i z # b U k s # b 145 k # 146 $ # D $ # l Y b r E r i","sentence_idx":0,"sentence_estimated_duration":2.31,"locale":"en-US","paragraph_idx":80},{"script_title":"questions","transcription":"h 145 v # j u # E v e # T A R # $ b @ t # m u v I N # 146 U # $ # d I f r $ n t # K ^ n 146 r i # ? ~","utterance_name":"YIhoP_87","words":"Have you ever thought about moving to a different country?","phone_sequence":"h 145 v # j u # E v e # T A R # $ b @ t # m u v I N # 146 U # $ # d I f r $ n t # K ^ n 146 r i","sentence_idx":0,"sentence_estimated_duration":2.57,"locale":"en-US","paragraph_idx":87},{"script_title":"questions","transcription":"h 145 v # j u # E v e # s n i z d # 145 n # K A f t # 145 t # D $ # s J m # 146 Y m # ? ~","utterance_name":"YIhoP_91","words":"Have you ever sneezed and coughed at the same time?","phone_sequence":"h 145 v # j u # E v e # s n i z d # 145 n # K A f t # 145 t # D $ # s J m # 146 Y m","sentence_idx":0,"sentence_estimated_duration":2.88,"locale":"en-US","paragraph_idx":91},{"script_title":"questions","transcription":"d u # j u # r I m E m b e # D $ # d r i m # j u # h 145 d # ? ~","utterance_name":"YIhoP_94","words":"Do you remember the dream you had?","phone_sequence":"d u # j u # r I m E m b e # D $ # d r i m # j u # h 145 d","sentence_idx":0,"sentence_estimated_duration":1.7,"locale":"en-US","paragraph_idx":94},{"script_title":"common_phrases","transcription":"I t s # $ # b j u R I f L # d J # 146 $ d J # . ~","utterance_name":"YZbVU_3","words":"It\u2019s a beautiful day today.","phone_sequence":"I t s # $ # b j u R I f L # d J # 146 $ d J","sentence_idx":0,"sentence_estimated_duration":1.52,"locale":"en-US","paragraph_idx":3},{"script_title":"common_phrases","transcription":"Y # h 145 R # $ # g r J t # d J # 145 t # D $ # P a r k # . ~","utterance_name":"YZbVU_11","words":"I had a great day at the park.","phone_sequence":"Y # h 145 R # $ # g r J t # d J # 145 t # D $ # P a r k","sentence_idx":0,"sentence_estimated_duration":1.93,"locale":"en-US","paragraph_idx":11},{"script_title":"common_phrases","transcription":"g r 145 b I N # $ # K ^ p # $ v # K A f i # D I s # 145 f 146 e n u n # s @ n d z # g r J t # . ~","utterance_name":"YZbVU_12","words":"Grabbing a cup of coffee this afternoon sounds great.","phone_sequence":"g r 145 b I N # $ # K ^ p # $ v # K A f i # D I s # 145 f 146 e n u n # s @ n d z # g r J t","sentence_idx":0,"sentence_estimated_duration":2.87,"locale":"en-US","paragraph_idx":12},{"script_title":"common_phrases","transcription":"Y # K U d 164 t # b i # m A r # E k s Y R I R # $ b @ t # m Y # n u # $ l E k 146 r I k # b Y s I K L # . ~","utterance_name":"YZbVU_14","words":"I couldn\u2019t be more excited about my new electric bicycle.","phone_sequence":"Y # K U d 164 t # b i # m A r # E k s Y R I R # $ b @ t # m Y # n u # $ l E k 146 r I k # b Y s I K L","sentence_idx":0,"sentence_estimated_duration":2.92,"locale":"en-US","paragraph_idx":14},{"script_title":"common_phrases","transcription":"P i t s $ # I z # w ^ n # $ v # m Y # f J v r I t # T I N z # 146 U # i t # . ~","utterance_name":"YZbVU_15","words":"Pizza is one of my favorite things to eat.","phone_sequence":"P i t s $ # I z # w ^ n # $ v # m Y # f J v r I t # T I N z # 146 U # i t","sentence_idx":0,"sentence_estimated_duration":2.2,"locale":"en-US","paragraph_idx":15},{"script_title":"common_phrases","transcription":"D $ # w E D e # l U k s # g r J t # f e # D I s # w i K E n d # . ~","utterance_name":"YZbVU_16","words":"The weather looks great for this weekend.","phone_sequence":"D $ # w E D e # l U k s # g r J t # f e # D I s # w i K E n d","sentence_idx":0,"sentence_estimated_duration":1.91,"locale":"en-US","paragraph_idx":16},{"script_title":"common_phrases","transcription":"Y # T I N k # w i # m J # h 145 v # m E t # b $ f A r # , # $ w Y l # $ g O # . ~","utterance_name":"YZbVU_19","words":"I think we may have met before, a while ago.","phone_sequence":"Y # T I N k # w i # m J # h 145 v # m E t # b $ f A r # $ w Y l # $ g O","sentence_idx":0,"sentence_estimated_duration":2.73,"locale":"en-US","paragraph_idx":19},{"script_title":"common_phrases","transcription":"n O # m 145 R e # D $ # 146 Y m # $ v # d J # , # Y l # h 145 P I l i # i R # $ # K U K i # . ~","utterance_name":"YZbVU_22","words":"No matter the time of day, I\u2019ll happily eat a cookie.","phone_sequence":"n O # m 145 R e # D $ # 146 Y m # $ v # d J # Y l # h 145 P I l i # i R # $ # K U K i","sentence_idx":0,"sentence_estimated_duration":3.14,"locale":"en-US","paragraph_idx":22},{"script_title":"common_phrases","transcription":"g a r d $ n I N # m J k s # m i # $ P r i S i J R # a r # P l 145 n I t # , # 145 n # a r # P l J s # I n # I t # . ~","utterance_name":"YZbVU_28","words":"Gardening makes me appreciate our planet, and our place in it.","phone_sequence":"g a r d $ n I N # m J k s # m i # $ P r i S i J R # a r # P l 145 n I t # 145 n # a r # P l J s # I n # I t","sentence_idx":0,"sentence_estimated_duration":3.35,"locale":"en-US","paragraph_idx":28},{"script_title":"common_phrases","transcription":"l E t # m i # n O # I f # j u # n i R # E n i # h E l p # w I T # D 145 t # . ~","utterance_name":"YZbVU_31","words":"Let me know if you need any help with that.","phone_sequence":"l E t # m i # n O # I f # j u # n i R # E n i # h E l p # w I T # D 145 t","sentence_idx":0,"sentence_estimated_duration":1.92,"locale":"en-US","paragraph_idx":31},{"script_title":"common_phrases","transcription":"Y m # h 145 P i # 146 $ # G ^ s t # s t J # I n # 145 n # r I l 145 k s # 146 $ n Y t # . ~","utterance_name":"YZbVU_35","words":"I\u2019m happy to just stay in and relax tonight.","phone_sequence":"Y m # h 145 P i # 146 $ # G ^ s t # s t J # I n # 145 n # r I l 145 k s # 146 $ n Y t","sentence_idx":0,"sentence_estimated_duration":2.63,"locale":"en-US","paragraph_idx":35},{"script_title":"common_phrases","transcription":"145 f 146 e # j u # g 145 D e # D i # I n g r i R i $ n t s # , # s I m P l i # f a l O # D $ # r E s I P i # . ~","utterance_name":"YZbVU_39","words":"After you gather the ingredients, simply follow the recipe.","phone_sequence":"145 f 146 e # j u # g 145 D e # D i # I n g r i R i $ n t s # s I m P l i # f a l O # D $ # r E s I P i","sentence_idx":0,"sentence_estimated_duration":3.24,"locale":"en-US","paragraph_idx":39},{"script_title":"statements","transcription":"$ b @ R # J R i # P e s E n t # $ v # A l # P i P L # a r # r Y t f U R I d # . ~","utterance_name":"zEoVu_6","words":"About eighty percent of all people are right-footed.","phone_sequence":"$ b @ R # J R i # P e s E n t # $ v # A l # P i P L # a r # r Y t f U R I d","sentence_idx":0,"sentence_estimated_duration":2.5,"locale":"en-US","paragraph_idx":6},{"script_title":"statements","transcription":"$ b @ t # 146 u T e d z # $ v # D $ # f a r m e z # O n # D $ # l 145 n d # a n # w I C # D J # w e k # . ~","utterance_name":"zEoVu_12","words":"About two-thirds of the farmers own the land on which they work.","phone_sequence":"$ b @ t # 146 u T e d z # $ v # D $ # f a r m e z # O n # D $ # l 145 n d # a n # w I C # D J # w e k","sentence_idx":0,"sentence_estimated_duration":3.13,"locale":"en-US","paragraph_idx":12},{"script_title":"statements","transcription":"$ K A r d I N # 146 $ # D $ # n Y n 146 i n # n Y n R i # s E n s $ s # , # I R # I z # D $ # l a r G I s t # s I R i # . ~","utterance_name":"zEoVu_13","words":"According to the nineteen ninety census, it is the largest city.","phone_sequence":"$ K A r d I N # 146 $ # D $ # n Y n 146 i n # n Y n R i # s E n s $ s # I R # I z # D $ # l a r G I s t # s I R i","sentence_idx":0,"sentence_estimated_duration":3.01,"locale":"en-US","paragraph_idx":13},{"script_title":"statements","transcription":"145 t # D i # J G # $ v # f A r 146 i n # , # h i # w $ z # 146 J K $ n # 146 U # I N g l $ n d # 146 $ # s t ^ R i # m j u z I k # . ~","utterance_name":"zEoVu_20","words":"At the age of fourteen, he was taken to England to study music.","phone_sequence":"145 t # D i # J G # $ v # f A r 146 i n # h i # w $ z # 146 J K $ n # 146 U # I N g l $ n d # 146 $ # s t ^ R i # m j u z I k","sentence_idx":0,"sentence_estimated_duration":3.83,"locale":"en-US","paragraph_idx":20},{"script_title":"statements","transcription":"145 t # D i # J G # $ v # s I k s t i f Y v # , # C e C I l # b i K J m # P r Y m # m I n I s t e # . ~","utterance_name":"zEoVu_21","words":"At the age of sixty-five, Churchill became prime minister.","phone_sequence":"145 t # D i # J G # $ v # s I k s t i f Y v # C e C I l # b i K J m # P r Y m # m I n I s t e","sentence_idx":0,"sentence_estimated_duration":3.48,"locale":"en-US","paragraph_idx":21},{"script_title":"statements","transcription":"145 t # D i # E n d # $ v # D $ # j i r # , # D $ # K ^ n 146 r i z # f Y n 145 n s I z # b i g 145 n # 146 $ # g r O # r 145 P I d l i # . ~","utterance_name":"zEoVu_22","words":"At the end of the year, the country\u2019s finances began to grow rapidly.","phone_sequence":"145 t # D i # E n d # $ v # D $ # j i r # D $ # K ^ n 146 r i z # f Y n 145 n s I z # b i g 145 n # 146 $ # g r O # r 145 P I d l i","sentence_idx":0,"sentence_estimated_duration":3.74,"locale":"en-US","paragraph_idx":22},{"script_title":"statements","transcription":"b O T # K ^ n 146 r i z # a r # m E m b e z # $ v # D $ # j u n j $ n # . ~","utterance_name":"zEoVu_27","words":"Both countries are members of the union.","phone_sequence":"b O T # K ^ n 146 r i z # a r # m E m b e z # $ v # D $ # j u n j $ n","sentence_idx":0,"sentence_estimated_duration":2.21,"locale":"en-US","paragraph_idx":27},{"script_title":"statements","transcription":"b r 145 n s $ n # b i K J m # $ # s I R i # I n # n Y n 146 i n # 146 w E l v # , # 145 n # h 145 z # $ # m J e K @ n s L # f A r m # $ v # g ^ v e n m $ n t # . ~","utterance_name":"zEoVu_28","words":"Branson became a city in nineteen twelve, and has a mayor-council form of government.","phone_sequence":"b r 145 n s $ n # b i K J m # $ # s I R i # I n # n Y n 146 i n # 146 w E l v # 145 n # h 145 z # $ # m J e K @ n s L # f A r m # $ v # g ^ v e n m $ n t","sentence_idx":0,"sentence_estimated_duration":4.6,"locale":"en-US","paragraph_idx":28},{"script_title":"statements","transcription":"b r U K l $ n # I z # $ n # I m P A r t 164 t # I n d $ s t r i # s E n 146 e # , # 145 n # r 145 N k s # $ z # w ^ n # $ v # D $ # n J S $ n z # l i R I N # s i P A r t s # . ~","utterance_name":"zEoVu_30","words":"Brooklyn is an important industry center, and ranks as one of the nation\u2019s leading seaports.","phone_sequence":"b r U K l $ n # I z # $ n # I m P A r t 164 t # I n d $ s t r i # s E n 146 e # 145 n # r 145 N k s # $ z # w ^ n # $ v # D $ # n J S $ n z # l i R I N # s i P A r t s","sentence_idx":0,"sentence_estimated_duration":4.68,"locale":"en-US","paragraph_idx":30},{"script_title":"statements","transcription":"b ^ t # b i g I n I N # I n # D $ # m I d # n Y n 146 i n # s I k s t i z # , # m u s # 145 n # w U l f # n ^ m b e z # b i g 145 n # 146 $ # f l ^ k C u J t # . ~","utterance_name":"zEoVu_31","words":"But beginning in the mid nineteen sixties, moose and wolf numbers began to fluctuate.","phone_sequence":"b ^ t # b i g I n I N # I n # D $ # m I d # n Y n 146 i n # s I k s t i z # m u s # 145 n # w U l f # n ^ m b e z # b i g 145 n # 146 $ # f l ^ k C u J t","sentence_idx":0,"sentence_estimated_duration":4.55,"locale":"en-US","paragraph_idx":31},{"script_title":"statements","transcription":"b Y # n Y n 146 i n # T e R i w ^ n # , # E R I s $ n # h 145 d # r i s i v d # w ^ n # T @ z $ n # n Y n 146 i T r i # P 145 t 164 t s # . ~","utterance_name":"zEoVu_37","words":"By nineteen thirty-one, Edison had received one thousand ninety-three patents.","phone_sequence":"b Y # n Y n 146 i n # T e R i w ^ n # E R I s $ n # h 145 d # r i s i v d # w ^ n # T @ z $ n # n Y n 146 i T r i # P 145 t 164 t s","sentence_idx":0,"sentence_estimated_duration":4.46,"locale":"en-US","paragraph_idx":37},{"script_title":"statements","transcription":"K $ m j u n L # , # b I z n I s # , # 145 n # P e s $ n L # s e v I s I z # f A r m # D $ # l i R I N # s e v I s # I n d $ s t r i # . ~","utterance_name":"zEoVu_40","words":"Communal, business, and personal services form the leading service industry.","phone_sequence":"K $ m j u n L # b I z n I s # 145 n # P e s $ n L # s e v I s I z # f A r m # D $ # l i R I N # s e v I s # I n d $ s t r i","sentence_idx":0,"sentence_estimated_duration":3.94,"locale":"en-US","paragraph_idx":40},{"script_title":"statements","transcription":"d E s k 146 a p # P ^ b l I S I N # b i g 145 n # I n # D $ # m I d # n Y n 146 i n # J R i z # . ~","utterance_name":"zEoVu_44","words":"Desktop publishing began in the mid nineteen eighties.","phone_sequence":"d E s k 146 a p # P ^ b l I S I N # b i g 145 n # I n # D $ # m I d # n Y n 146 i n # J R i z","sentence_idx":0,"sentence_estimated_duration":2.86,"locale":"en-US","paragraph_idx":44},{"script_title":"statements","transcription":"d A l f I n z # K 145 n # 146 A k # w I T # w ^ n # $ n ^ D e # I n # d I f r $ n t # w J z # . ~","utterance_name":"zEoVu_45","words":"Dolphins can talk with one another in different ways.","phone_sequence":"d A l f I n z # K 145 n # 146 A k # w I T # w ^ n # $ n ^ D e # I n # d I f r $ n t # w J z","sentence_idx":0,"sentence_estimated_duration":2.84,"locale":"en-US","paragraph_idx":45},{"script_title":"statements","transcription":"d e I N # D $ # n E k s t # 146 w E n i # j i r z # , # D J # E k s p l A r d # m ^ C # $ v # D $ # r i G $ n # . ~","utterance_name":"zEoVu_47","words":"During the next twenty years, they explored much of the region.","phone_sequence":"d e I N # D $ # n E k s t # 146 w E n i # j i r z # D J # E k s p l A r d # m ^ C # $ v # D $ # r i G $ n","sentence_idx":0,"sentence_estimated_duration":3.25,"locale":"en-US","paragraph_idx":47},{"script_title":"statements","transcription":"d e I N # D I s # 146 Y m # , # D J # b i g 145 n # w J t l I f 146 I N # 145 n # ^ D e # E k s e s Y z # P r O g r 145 m z # . ~","utterance_name":"zEoVu_48","words":"During this time, they began weightlifting and other exercise programs.","phone_sequence":"d e I N # D I s # 146 Y m # D J # b i g 145 n # w J t l I f 146 I N # 145 n # ^ D e # E k s e s Y z # P r O g r 145 m z","sentence_idx":0,"sentence_estimated_duration":4.09,"locale":"en-US","paragraph_idx":48},{"script_title":"statements","transcription":"E n e G i # j u z # d i K l Y n d # I n # D $ # j u n Y R I d # s t J t s # d e I N # D i # e l i # n Y n 146 i n # J R i z # . ~","utterance_name":"zEoVu_51","words":"Energy use declined in the United States during the early nineteen eighties.","phone_sequence":"E n e G i # j u z # d i K l Y n d # I n # D $ # j u n Y R I d # s t J t s # d e I N # D i # e l i # n Y n 146 i n # J R i z","sentence_idx":0,"sentence_estimated_duration":3.75,"locale":"en-US","paragraph_idx":51},{"script_title":"statements","transcription":"f a r m I N # $ K @ n t s # f e # $ b @ t # 146 E n # P e s E n t # $ v # D $ # P r $ d ^ k S $ n # . ~","utterance_name":"zEoVu_52","words":"Farming accounts for about ten percent of the production.","phone_sequence":"f a r m I N # $ K @ n t s # f e # $ b @ t # 146 E n # P e s E n t # $ v # D $ # P r $ d ^ k S $ n","sentence_idx":0,"sentence_estimated_duration":2.71,"locale":"en-US","paragraph_idx":52},{"script_title":"statements","transcription":"I n # ^ D e # P a r t s # $ v # D $ # K ^ n 146 r i # , # f a r m I N # b i g 145 n # l J R e # . ~","utterance_name":"zEoVu_53","words":"In other parts of the country, farming began later.","phone_sequence":"I n # ^ D e # P a r t s # $ v # D $ # K ^ n 146 r i # f a r m I N # b i g 145 n # l J R e","sentence_idx":0,"sentence_estimated_duration":2.86,"locale":"en-US","paragraph_idx":53},{"script_title":"statements","transcription":"f a r m l 145 n d # K ^ v e z # $ b @ t # s I k s t i s E v $ n # P e s E n t # $ v # D $ # l 145 n d # . ~","utterance_name":"zEoVu_55","words":"Farmland covers about sixty-seven percent of the land.","phone_sequence":"f a r m l 145 n d # K ^ v e z # $ b @ t # s I k s t i s E v $ n # P e s E n t # $ v # D $ # l 145 n d","sentence_idx":0,"sentence_estimated_duration":3.13,"locale":"en-US","paragraph_idx":55},{"script_title":"statements","transcription":"f Y r w i d z # 145 n # ^ D e # w Y l d # f l @ e z # g r O # I n # m E n i # P a r t s # $ v # D $ # P r a v $ n s # . ~","utterance_name":"zEoVu_58","words":"Fireweeds and other wild flowers grow in many parts of the province.","phone_sequence":"f Y r w i d z # 145 n # ^ D e # w Y l d # f l @ e z # g r O # I n # m E n i # P a r t s # $ v # D $ # P r a v $ n s","sentence_idx":0,"sentence_estimated_duration":3.83,"locale":"en-US","paragraph_idx":58},{"script_title":"statements","transcription":"f e # I g z 145 m P L # , # $ # b e C # 146 r i # g I v z # A f # $ b @ t # s E v $ n R i # g 145 l $ n z # $ v # w A R e # $ # d J # . ~","utterance_name":"zEoVu_59","words":"For example, a birch tree gives off about seventy gallons of water a day.","phone_sequence":"f e # I g z 145 m P L # $ # b e C # 146 r i # g I v z # A f # $ b @ t # s E v $ n R i # g 145 l $ n z # $ v # w A R e # $ # d J","sentence_idx":0,"sentence_estimated_duration":4.22,"locale":"en-US","paragraph_idx":59},{"script_title":"statements","transcription":"f e # h e # w e k # , # S i # w $ z # $ w A r d I d # D $ # n O b E l P r Y z # I n # n Y n 146 i n # f I f 146 i n Y n # . ~","utterance_name":"zEoVu_61","words":"For her work, she was awarded the Nobel Prize in nineteen fifty-nine.","phone_sequence":"f e # h e # w e k # S i # w $ z # $ w A r d I d # D $ # n O b E l P r Y z # I n # n Y n 146 i n # f I f 146 i n Y n","sentence_idx":0,"sentence_estimated_duration":3.89,"locale":"en-US","paragraph_idx":61},{"script_title":"statements","transcription":"g l 145 s m J K I N # b i K J m # I m P A r t 164 t # I n # I N g l $ n d # d e I N # D $ # f I f 146 i n # h ^ n d r I d z # . ~","utterance_name":"zEoVu_63","words":"Glassmaking became important in England during the fifteen hundreds.","phone_sequence":"g l 145 s m J K I N # b i K J m # I m P A r t 164 t # I n # I N g l $ n d # d e I N # D $ # f I f 146 i n # h ^ n d r I d z","sentence_idx":0,"sentence_estimated_duration":3.51,"locale":"en-US","paragraph_idx":63},{"script_title":"statements","transcription":"h i # b i g 145 n # h I z # b J s b A l # K $ r i r # I n # D $ # m Y n e # l i g z # I n # n Y n 146 i n # 146 w E n i J t # . ~","utterance_name":"zEoVu_66","words":"He began his baseball career in the minor leagues in nineteen twenty-eight.","phone_sequence":"h i # b i g 145 n # h I z # b J s b A l # K $ r i r # I n # D $ # m Y n e # l i g z # I n # n Y n 146 i n # 146 w E n i J t","sentence_idx":0,"sentence_estimated_duration":3.6,"locale":"en-US","paragraph_idx":66},{"script_title":"statements","transcription":"I n # J 146 i n # s E v $ n R i # 146 u # , # h i # b A t # K $ n 146 r O l # $ v # D $ # n u # j A r k # 146 r I b j u n # . ~","utterance_name":"zEoVu_68","words":"In eighteen seventy-two, he bought control of the New York Tribune.","phone_sequence":"I n # J 146 i n # s E v $ n R i # 146 u # h i # b A t # K $ n 146 r O l # $ v # D $ # n u # j A r k # 146 r I b j u n","sentence_idx":0,"sentence_estimated_duration":3.71,"locale":"en-US","paragraph_idx":68},{"script_title":"statements","transcription":"h i # e n d # $ # l A # d $ g r i # f r $ m # h a r v e d # l A # s k u l # I n # n Y n 146 i n # s I k s t i # . ~","utterance_name":"zEoVu_70","words":"He earned a law degree from Harvard Law School in nineteen sixty.","phone_sequence":"h i # e n d # $ # l A # d $ g r i # f r $ m # h a r v e d # l A # s k u l # I n # n Y n 146 i n # s I k s t i","sentence_idx":0,"sentence_estimated_duration":3.27,"locale":"en-US","paragraph_idx":70},{"script_title":"statements","transcription":"h i # m u v d # 146 $ # S I K a g O # I n # J 146 i n # T e R i T r i # , # 145 n # m J R # $ # f A r C $ n # I n # r i l # I s t J t # . ~","utterance_name":"zEoVu_72","words":"He moved to Chicago in eighteen thirty-three, and made a fortune in real estate.","phone_sequence":"h i # m u v d # 146 $ # S I K a g O # I n # J 146 i n # T e R i T r i # 145 n # m J R # $ # f A r C $ n # I n # r i l # I s t J t","sentence_idx":0,"sentence_estimated_duration":4.14,"locale":"en-US","paragraph_idx":72},{"script_title":"statements","transcription":"h i # n E k s t # 146 r 145 v $ l d # 146 $ # D $ # s ^ D e n # 146 I p # $ v # s @ T $ m E r I K $ # . ~","utterance_name":"zEoVu_73","words":"He next traveled to the southern tip of South America.","phone_sequence":"h i # n E k s t # 146 r 145 v $ l d # 146 $ # D $ # s ^ D e n # 146 I p # $ v # s @ T $ m E r I K $","sentence_idx":0,"sentence_estimated_duration":2.8,"locale":"en-US","paragraph_idx":73},{"script_title":"statements","transcription":"h i # w $ z # $ l E k 146 I d # 146 $ # D $ # b r I R I S # h @ s $ v K a m $ n z # I n # n Y n 146 i n # s E v $ n R i # . ~","utterance_name":"zEoVu_78","words":"He was elected to the British House of Commons in nineteen seventy.","phone_sequence":"h i # w $ z # $ l E k 146 I d # 146 $ # D $ # b r I R I S # h @ s $ v K a m $ n z # I n # n Y n 146 i n # s E v $ n R i","sentence_idx":0,"sentence_estimated_duration":3.24,"locale":"en-US","paragraph_idx":78},{"script_title":"statements","transcription":"h i # w $ z # n J m d # 146 $ # D $ # n 145 S $ n L # b J s b A l # h A l # $ v # f J m # I n # n Y n 146 i n # s E v $ n R i # . ~","utterance_name":"zEoVu_79","words":"He was named to the National Baseball Hall of Fame in nineteen seventy.","phone_sequence":"h i # w $ z # n J m d # 146 $ # D $ # n 145 S $ n L # b J s b A l # h A l # $ v # f J m # I n # n Y n 146 i n # s E v $ n R i","sentence_idx":0,"sentence_estimated_duration":3.64,"locale":"en-US","paragraph_idx":79},{"script_title":"statements","transcription":"h i # w $ z # w ^ n # $ v # D $ # m O s t # I m P A r t 164 t # a r K I R E k t s # $ v # D $ # s I k s 146 i n # h ^ n d r I d z # . ~","utterance_name":"zEoVu_80","words":"He was one of the most important architects of the sixteen hundreds.","phone_sequence":"h i # w $ z # w ^ n # $ v # D $ # m O s t # I m P A r t 164 t # a r K I R E k t s # $ v # D $ # s I k s 146 i n # h ^ n d r I d z","sentence_idx":0,"sentence_estimated_duration":3.21,"locale":"en-US","paragraph_idx":80},{"script_title":"statements","transcription":"I n # J 146 i n # f I f 146 i n # , # d I 146 r y t # b i K J m # $ # s I R i # . ~","utterance_name":"zEoVu_89","words":"In eighteen fifteen, Detroit became a city.","phone_sequence":"I n # J 146 i n # f I f 146 i n # d I 146 r y t # b i K J m # $ # s I R i","sentence_idx":0,"sentence_estimated_duration":2.68,"locale":"en-US","paragraph_idx":89},{"script_title":"statements","transcription":"I n # J 146 i n # 146 w E n i J t # , # K u P e z # f E r i # b i K J m # $ # s I R i # 145 n # C J n G d # I t s # n J m # 146 $ # K 145 m d $ n # . ~","utterance_name":"zEoVu_90","words":"In eighteen twenty-eight, Cooper\u2019s Ferry became a city and changed its name to Camden.","phone_sequence":"I n # J 146 i n # 146 w E n i J t # K u P e z # f E r i # b i K J m # $ # s I R i # 145 n # C J n G d # I t s # n J m # 146 $ # K 145 m d $ n","sentence_idx":0,"sentence_estimated_duration":4.65,"locale":"en-US","paragraph_idx":90},{"script_title":"statements","transcription":"I n # n Y n 146 i n # s E v $ n R i # 146 u # , # S i # w $ z # $ l E k 146 I d # 146 $ # D $ # j u n Y R I d # s t J t s # K A N g r I s # . ~","utterance_name":"zEoVu_91","words":"In nineteen seventy-two, she was elected to the United States congress.","phone_sequence":"I n # n Y n 146 i n # s E v $ n R i # 146 u # S i # w $ z # $ l E k 146 I d # 146 $ # D $ # j u n Y R I d # s t J t s # K A N g r I s","sentence_idx":0,"sentence_estimated_duration":4.06,"locale":"en-US","paragraph_idx":91},{"script_title":"statements","transcription":"I n # D $ # m I R # J 146 i n # J R i z # , # ^ n d e g r @ n d # m Y n I N # b i g 145 n # . ~","utterance_name":"zEoVu_94","words":"In the mid eighteen eighties, underground mining began.","phone_sequence":"I n # D $ # m I R # J 146 i n # J R i z # ^ n d e g r @ n d # m Y n I N # b i g 145 n","sentence_idx":0,"sentence_estimated_duration":2.85,"locale":"en-US","paragraph_idx":94},{"script_title":"statements","transcription":"I R # I z # A l s O # $ # m a r K I t # s E n 146 e # f e # D $ # P i P L # $ v # D i # E r i $ # . ~","utterance_name":"zEoVu_98","words":"It is also a market center for the people of the area.","phone_sequence":"I R # I z # A l s O # $ # m a r K I t # s E n 146 e # f e # D $ # P i P L # $ v # D i # E r i $","sentence_idx":0,"sentence_estimated_duration":2.65,"locale":"en-US","paragraph_idx":98},{"script_title":"statements","transcription":"I t # K 145 n # w J # ^ p # 146 $ # f Y v # 145 n # $ # h 145 f # P @ n d z # . ~","utterance_name":"zEoVu_100","words":"It can weigh up to five and a half pounds.","phone_sequence":"I t # K 145 n # w J # ^ p # 146 $ # f Y v # 145 n # $ # h 145 f # P @ n d z","sentence_idx":0,"sentence_estimated_duration":2.42,"locale":"en-US","paragraph_idx":100},{"script_title":"statements","transcription":"I t # g r O z # f r $ m # m a n 146 145 n $ # 146 $ # n u m E k s I K O # , # 145 n # w E s t # 146 $ # D $ # P $ s I f I k # K O s t # . ~","utterance_name":"zEoVu_101","words":"It grows from Montana to New Mexico, and west to the Pacific Coast.","phone_sequence":"I t # g r O z # f r $ m # m a n 146 145 n $ # 146 $ # n u m E k s I K O # 145 n # w E s t # 146 $ # D $ # P $ s I f I k # K O s t","sentence_idx":0,"sentence_estimated_duration":3.97,"locale":"en-US","paragraph_idx":101},{"script_title":"statements","transcription":"I t # h 145 z # $ # K a l I G # $ v # a r t s # 145 n # s Y $ n s I z # 145 n # $ # s k u l # $ v # m E R I s $ n # . ~","utterance_name":"zEoVu_102","words":"It has a College of Arts and Sciences and a School of Medicine.","phone_sequence":"I t # h 145 z # $ # K a l I G # $ v # a r t s # 145 n # s Y $ n s I z # 145 n # $ # s k u l # $ v # m E R I s $ n","sentence_idx":0,"sentence_estimated_duration":3.6,"locale":"en-US","paragraph_idx":102},{"script_title":"statements","transcription":"I t # h 145 z # $ # l E N T # $ v # w ^ n # 145 n # $ # h 145 f # I n C I z # . ~","utterance_name":"zEoVu_103","words":"It has a length of one and a half inches.","phone_sequence":"I t # h 145 z # $ # l E N T # $ v # w ^ n # 145 n # $ # h 145 f # I n C I z","sentence_idx":0,"sentence_estimated_duration":2.39,"locale":"en-US","paragraph_idx":103},{"script_title":"statements","transcription":"I t # h 145 z # $ b @ t # s I k s t i # T @ z $ n # m E m b e z # I n # D $ # j u n Y R I d # s t J t s # 145 n # K 145 n $ R $ # . ~","utterance_name":"zEoVu_104","words":"It has about sixty thousand members in the United States and Canada.","phone_sequence":"I t # h 145 z # $ b @ t # s I k s t i # T @ z $ n # m E m b e z # I n # D $ # j u n Y R I d # s t J t s # 145 n # K 145 n $ R $","sentence_idx":0,"sentence_estimated_duration":3.76,"locale":"en-US","paragraph_idx":104},{"script_title":"statements","transcription":"I t # h 145 z # $ n # 145 v r I G # $ v # $ b @ t # w ^ n # r J R i O # f e # E v r i # f A r # P i P L # . ~","utterance_name":"zEoVu_105","words":"It has an average of about one radio for every four people.","phone_sequence":"I t # h 145 z # $ n # 145 v r I G # $ v # $ b @ t # w ^ n # r J R i O # f e # E v r i # f A r # P i P L","sentence_idx":0,"sentence_estimated_duration":3.21,"locale":"en-US","paragraph_idx":105},{"script_title":"statements","transcription":"I t # h 145 z # s E v r L # r I v e z # , # m O s t # $ v # D $ m # I n # D $ # s @ T # . ~","utterance_name":"zEoVu_106","words":"It has several rivers, most of them in the south.","phone_sequence":"I t # h 145 z # s E v r L # r I v e z # m O s t # $ v # D $ m # I n # D $ # s @ T","sentence_idx":0,"sentence_estimated_duration":2.78,"locale":"en-US","paragraph_idx":106},{"script_title":"statements","transcription":"I R # I N K l u d z # D $ # m @ n t 164 z # 145 n # D $ # s ^ D e n # P a r t # $ v # D $ # h ^ d s $ n # r I v e # v 145 l i # . ~","utterance_name":"zEoVu_107","words":"It includes the mountains and the southern part of the Hudson River Valley.","phone_sequence":"I R # I N K l u d z # D $ # m @ n t 164 z # 145 n # D $ # s ^ D e n # P a r t # $ v # D $ # h ^ d s $ n # r I v e # v 145 l i","sentence_idx":0,"sentence_estimated_duration":3.6,"locale":"en-US","paragraph_idx":107},{"script_title":"statements","transcription":"I R # I z # A l s O # j u z d # I n # g J m z # . ~","utterance_name":"zEoVu_111","words":"It is also used in games.","phone_sequence":"I R # I z # A l s O # j u z d # I n # g J m z","sentence_idx":0,"sentence_estimated_duration":1.69,"locale":"en-US","paragraph_idx":111},{"script_title":"statements","transcription":"I t s # $ n # I k s t E n S $ n # $ v # D $ # n i r b Y # s i # . ~","utterance_name":"zEoVu_114","words":"It\u2019s an extension of the nearby sea.","phone_sequence":"I t s # $ n # I k s t E n S $ n # $ v # D $ # n i r b Y # s i","sentence_idx":0,"sentence_estimated_duration":2.02,"locale":"en-US","paragraph_idx":114},{"script_title":"statements","transcription":"I t s # m J R # ^ p # $ v # E r i $ z # I n # D $ # n A r T # 145 n # s @ T # . ~","utterance_name":"zEoVu_115","words":"It\u2019s made up of areas in the north and south.","phone_sequence":"I t s # m J R # ^ p # $ v # E r i $ z # I n # D $ # n A r T # 145 n # s @ T","sentence_idx":0,"sentence_estimated_duration":2.59,"locale":"en-US","paragraph_idx":115},{"script_title":"statements","transcription":"I t s # D $ # b e T P l J s # $ v # $ # f A r m e # f r E n C # l i R e # . ~","utterance_name":"zEoVu_118","words":"It\u2019s the birthplace of a former French leader.","phone_sequence":"I t s # D $ # b e T P l J s # $ v # $ # f A r m e # f r E n C # l i R e","sentence_idx":0,"sentence_estimated_duration":2.29,"locale":"en-US","paragraph_idx":118},{"script_title":"statements","transcription":"I R # I z # D $ # s t J t # K 145 P $ R L # 145 n # l a r G I s t # s I R i # . ~","utterance_name":"zEoVu_119","words":"It is the state capital and largest city.","phone_sequence":"I R # I z # D $ # s t J t # K 145 P $ R L # 145 n # l a r G I s t # s I R i","sentence_idx":0,"sentence_estimated_duration":2.35,"locale":"en-US","paragraph_idx":119},{"script_title":"statements","transcription":"I t # w J z # f r $ m # f Y v # 145 n # $ # h 145 f # 146 $ # s I k s # @ n s I z # . ~","utterance_name":"zEoVu_130","words":"It weighs from five and a half to six ounces.","phone_sequence":"I t # w J z # f r $ m # f Y v # 145 n # $ # h 145 f # 146 $ # s I k s # @ n s I z","sentence_idx":0,"sentence_estimated_duration":2.7,"locale":"en-US","paragraph_idx":130},{"script_title":"statements","transcription":"m E n i # P i P L # h u # l I v # I n # D $ # s ^ b e b z # w e k # I n # D $ # s I R i # . ~","utterance_name":"zEoVu_133","words":"Many people who live in the suburbs work in the city.","phone_sequence":"m E n i # P i P L # h u # l I v # I n # D $ # s ^ b e b z # w e k # I n # D $ # s I R i","sentence_idx":0,"sentence_estimated_duration":2.64,"locale":"en-US","paragraph_idx":133},{"script_title":"statements","transcription":"m O s t # $ v # D i z # K a l I G I z # a r # P a r R # $ v # $ # l a r G # g r u p # $ v # s k u l z # . ~","utterance_name":"zEoVu_137","words":"Most of these colleges are part of a large group of schools.","phone_sequence":"m O s t # $ v # D i z # K a l I G I z # a r # P a r R # $ v # $ # l a r G # g r u p # $ v # s k u l z","sentence_idx":0,"sentence_estimated_duration":3.27,"locale":"en-US","paragraph_idx":137},{"script_title":"statements","transcription":"m O s t # r 145 n C I z # a r # f @ n d # I n # D $ # w E s t e n # j u n Y R I d # s t J t s # 145 n # K 145 n $ R $ # . ~","utterance_name":"zEoVu_138","words":"Most ranches are found in the western United States and Canada.","phone_sequence":"m O s t # r 145 n C I z # a r # f @ n d # I n # D $ # w E s t e n # j u n Y R I d # s t J t s # 145 n # K 145 n $ R $","sentence_idx":0,"sentence_estimated_duration":3.66,"locale":"en-US","paragraph_idx":138},{"script_title":"statements","transcription":"n i r b Y # I z # 146 $ r a n O # , # w ^ n # $ v # D $ # C i f # P A r t s # a n # D $ # g r J t l J k s # . ~","utterance_name":"zEoVu_139","words":"Nearby is Toronto, one of the chief ports on the Great Lakes.","phone_sequence":"n i r b Y # I z # 146 $ r a n O # w ^ n # $ v # D $ # C i f # P A r t s # a n # D $ # g r J t l J k s","sentence_idx":0,"sentence_estimated_duration":3.31,"locale":"en-US","paragraph_idx":139},{"script_title":"statements","transcription":"n u K l i e # P l 145 n t s # P r $ v Y R # $ b @ t # 146 w E n i # P e s E n t # $ v # D $ # s t J t s # $ l E k 146 r I k # P @ e # . ~","utterance_name":"zEoVu_140","words":"Nuclear plants provide about twenty percent of the state\u2019s electric power.","phone_sequence":"n u K l i e # P l 145 n t s # P r $ v Y R # $ b @ t # 146 w E n i # P e s E n t # $ v # D $ # s t J t s # $ l E k 146 r I k # P @ e","sentence_idx":0,"sentence_estimated_duration":3.85,"locale":"en-US","paragraph_idx":140},{"script_title":"statements","transcription":"S i # A l s O # I z # P a r 146 @ n e # $ v # w ^ n # $ v # D $ # n J S $ n z # E r l Y n z # . ~","utterance_name":"zEoVu_142","words":"She also is part-owner of one of the nation\u2019s airlines.","phone_sequence":"S i # A l s O # I z # P a r 146 @ n e # $ v # w ^ n # $ v # D $ # n J S $ n z # E r l Y n z","sentence_idx":0,"sentence_estimated_duration":2.9,"locale":"en-US","paragraph_idx":142},{"script_title":"statements","transcription":"S i # $ 146 E n d I d # K a l I G # I n # l a s # 145 n G $ l I s # . ~","utterance_name":"zEoVu_144","words":"She attended college in Los Angeles.","phone_sequence":"S i # $ 146 E n d I d # K a l I G # I n # l a s # 145 n G $ l I s","sentence_idx":0,"sentence_estimated_duration":2.19,"locale":"en-US","paragraph_idx":144},{"script_title":"statements","transcription":"S i # $ 146 E n d I d # K a l I G # I n # n u # j A r k # s I R i # I n # n Y n 146 i n # T e R i w ^ n # . ~","utterance_name":"zEoVu_145","words":"She attended college in New York City in nineteen thirty-one.","phone_sequence":"S i # $ 146 E n d I d # K a l I G # I n # n u # j A r k # s I R i # I n # n Y n 146 i n # T e R i w ^ n","sentence_idx":0,"sentence_estimated_duration":3.13,"locale":"en-US","paragraph_idx":145},{"script_title":"statements","transcription":"S i # b i K J m # n O n # f e # h e # w e k # I n # D 145 t # Z a n r $ # $ v # m j u z I k # . ~","utterance_name":"zEoVu_146","words":"She became known for her work in that genre of music.","phone_sequence":"S i # b i K J m # n O n # f e # h e # w e k # I n # D 145 t # Z a n r $ # $ v # m j u z I k","sentence_idx":0,"sentence_estimated_duration":2.83,"locale":"en-US","paragraph_idx":146},{"script_title":"statements","transcription":"I n # n Y n 146 i n # T e R i f Y v # , # S i # K J m # 146 $ # D $ # j u n Y R I d # s t J t s # . ~","utterance_name":"zEoVu_149","words":"In nineteen thirty-five, she came to the United States.","phone_sequence":"I n # n Y n 146 i n # T e R i f Y v # S i # K J m # 146 $ # D $ # j u n Y R I d # s t J t s","sentence_idx":0,"sentence_estimated_duration":3.08,"locale":"en-US","paragraph_idx":149},{"script_title":"statements","transcription":"S i # f e s t # w ^ n # $ n # $ l E k S $ n # I n # n Y n 146 i n # J R i f A r # . ~","utterance_name":"zEoVu_150","words":"She first won an election in nineteen eighty-four.","phone_sequence":"S i # f e s t # w ^ n # $ n # $ l E k S $ n # I n # n Y n 146 i n # J R i f A r","sentence_idx":0,"sentence_estimated_duration":2.52,"locale":"en-US","paragraph_idx":150},{"script_title":"statements","transcription":"S i # l J R e # s e v d # $ z # P r E z I R $ n t # $ v # D $ # g r u p # . ~","utterance_name":"zEoVu_151","words":"She later served as president of the group.","phone_sequence":"S i # l J R e # s e v d # $ z # P r E z I R $ n t # $ v # D $ # g r u p","sentence_idx":0,"sentence_estimated_duration":2.32,"locale":"en-US","paragraph_idx":151},{"script_title":"statements","transcription":"S i # r i s i v d # $ # P r Y z # f e # K E m I s t r i # I n # n Y n 146 i n # n Y n 146 i w ^ n # f e # D I s # w e k # . ~","utterance_name":"zEoVu_154","words":"She received a prize for chemistry in nineteen ninety-one for this work.","phone_sequence":"S i # r i s i v d # $ # P r Y z # f e # K E m I s t r i # I n # n Y n 146 i n # n Y n 146 i w ^ n # f e # D I s # w e k","sentence_idx":0,"sentence_estimated_duration":3.84,"locale":"en-US","paragraph_idx":154},{"script_title":"statements","transcription":"S i # r i 146 e n d # 146 $ # D $ # j u n Y R I d # s t J t s # I n # J 146 i n # n Y n 146 i n # . ~","utterance_name":"zEoVu_156","words":"She returned to the United States in eighteen nineteen.","phone_sequence":"S i # r i 146 e n d # 146 $ # D $ # j u n Y R I d # s t J t s # I n # J 146 i n # n Y n 146 i n","sentence_idx":0,"sentence_estimated_duration":2.71,"locale":"en-US","paragraph_idx":156},{"script_title":"statements","transcription":"S i # s t ^ R i R # 145 t # K J m b r I G # . ~","utterance_name":"zEoVu_158","words":"She studied at Cambridge.","phone_sequence":"S i # s t ^ R i R # 145 t # K J m b r I G","sentence_idx":0,"sentence_estimated_duration":1.52,"locale":"en-US","paragraph_idx":158},{"script_title":"statements","transcription":"S i # w $ z # $ # G e n L I s t # . ~","utterance_name":"zEoVu_160","words":"She was a journalist.","phone_sequence":"S i # w $ z # $ # G e n L I s t","sentence_idx":0,"sentence_estimated_duration":1.34,"locale":"en-US","paragraph_idx":160},{"script_title":"statements","transcription":"S i # w $ z # w ^ n # $ v # D $ # f e s t # s Y $ n 146 I s t s # 146 $ # P r $ P O z # $ # T i r i # l Y k # D 145 t # . ~","utterance_name":"zEoVu_163","words":"She was one of the first scientists to propose a theory like that.","phone_sequence":"S i # w $ z # w ^ n # $ v # D $ # f e s t # s Y $ n 146 I s t s # 146 $ # P r $ P O z # $ # T i r i # l Y k # D 145 t","sentence_idx":0,"sentence_estimated_duration":3.35,"locale":"en-US","paragraph_idx":163},{"script_title":"statements","transcription":"S i # w $ z # D $ # d A R e # $ v # $ # w E l n O n # m e C $ n t # . ~","utterance_name":"zEoVu_164","words":"She was the daughter of a well-known merchant.","phone_sequence":"S i # w $ z # D $ # d A R e # $ v # $ # w E l n O n # m e C $ n t","sentence_idx":0,"sentence_estimated_duration":2.17,"locale":"en-US","paragraph_idx":164},{"script_title":"statements","transcription":"s I n s # D i # e l i # J 146 i n # h ^ n d r I d z # , # l a r G # n ^ m b e z # $ v # 146 u r I s t s # h 145 v # K ^ m # 146 $ # s w I t s e l $ n d # . ~","utterance_name":"zEoVu_166","words":"Since the early eighteen hundreds, large numbers of tourists have come to Switzerland.","phone_sequence":"s I n s # D i # e l i # J 146 i n # h ^ n d r I d z # l a r G # n ^ m b e z # $ v # 146 u r I s t s # h 145 v # K ^ m # 146 $ # s w I t s e l $ n d","sentence_idx":0,"sentence_estimated_duration":4.93,"locale":"en-US","paragraph_idx":166},{"script_title":"statements","transcription":"s I n s # D $ # m I d # n Y n 146 i n # h ^ n d r I d z # , # I t # h 145 z # I k s p 145 n d I d # r 145 P I d l i # . ~","utterance_name":"zEoVu_167","words":"Since the mid nineteen hundreds, it has expanded rapidly.","phone_sequence":"s I n s # D $ # m I d # n Y n 146 i n # h ^ n d r I d z # I t # h 145 z # I k s p 145 n d I d # r 145 P I d l i","sentence_idx":0,"sentence_estimated_duration":3.51,"locale":"en-US","paragraph_idx":167},{"script_title":"statements","transcription":"s $ m # K Y n d z # $ v # m A T s # h 145 v # D $ # K ^ l e # $ v # 146 r i # b a r k # . ~","utterance_name":"zEoVu_168","words":"Some kinds of moths have the color of tree bark.","phone_sequence":"s $ m # K Y n d z # $ v # m A T s # h 145 v # D $ # K ^ l e # $ v # 146 r i # b a r k","sentence_idx":0,"sentence_estimated_duration":2.61,"locale":"en-US","paragraph_idx":168},{"script_title":"statements","transcription":"s $ m # $ v # D i z # 146 r Y l z # a r # K $ n d ^ k 146 I R # I n # $ # l 145 b # . ~","utterance_name":"zEoVu_169","words":"Some of these trials are conducted in a lab.","phone_sequence":"s $ m # $ v # D i z # 146 r Y l z # a r # K $ n d ^ k 146 I R # I n # $ # l 145 b","sentence_idx":0,"sentence_estimated_duration":2.43,"locale":"en-US","paragraph_idx":169},{"script_title":"statements","transcription":"D $ # K 145 m P $ s # h 145 z # P r O g r 145 m z # I n # s ^ C # E r i $ z # $ z # b I z n I s # m 145 n I G m $ n t # , # 146 i C I N # , # 145 n # n e s I N # . ~","utterance_name":"zEoVu_171","words":"The campus has programs in such areas as business management, teaching, and nursing.","phone_sequence":"D $ # K 145 m P $ s # h 145 z # P r O g r 145 m z # I n # s ^ C # E r i $ z # $ z # b I z n I s # m 145 n I G m $ n t # 146 i C I N # 145 n # n e s I N","sentence_idx":0,"sentence_estimated_duration":4.73,"locale":"en-US","paragraph_idx":171},{"script_title":"statements","transcription":"D $ # s I R i # A l s O # h 145 z # $ # l a r G # n ^ m b e # $ v # P i P L # f r $ m # ^ D e # K ^ n 146 r i z # l I v I N # D E r # . ~","utterance_name":"zEoVu_172","words":"The city also has a large number of people from other countries living there.","phone_sequence":"D $ # s I R i # A l s O # h 145 z # $ # l a r G # n ^ m b e # $ v # P i P L # f r $ m # ^ D e # K ^ n 146 r i z # l I v I N # D E r","sentence_idx":0,"sentence_estimated_duration":3.79,"locale":"en-US","paragraph_idx":172},{"script_title":"statements","transcription":"D $ # s I R i # K ^ v e z # $ b @ t # f A r R i # s k w E r # m Y l z # , # I n # D $ # m I R L # $ v # $ # r I C # f a r m I N # E r i $ # . ~","utterance_name":"zEoVu_173","words":"The city covers about forty square miles, in the middle of a rich farming area.","phone_sequence":"D $ # s I R i # K ^ v e z # $ b @ t # f A r R i # s k w E r # m Y l z # I n # D $ # m I R L # $ v # $ # r I C # f a r m I N # E r i $","sentence_idx":0,"sentence_estimated_duration":4.31,"locale":"en-US","paragraph_idx":173},{"script_title":"statements","transcription":"D $ # r I v e # f A r m z # P a r R # $ v # D $ # b A r d e # b i 146 w i n # D $ # f r E n C # 145 n # d ^ C # r i G $ n z # . ~","utterance_name":"zEoVu_186","words":"The river forms part of the border between the French and Dutch regions.","phone_sequence":"D $ # r I v e # f A r m z # P a r R # $ v # D $ # b A r d e # b i 146 w i n # D $ # f r E n C # 145 n # d ^ C # r i G $ n z","sentence_idx":0,"sentence_estimated_duration":3.92,"locale":"en-US","paragraph_idx":186},{"script_title":"statements","transcription":"D $ # 146 E k n I K L # n J m # f e # D $ # l O K L # s p i S i z # I z # d I f r $ n t # f r $ m # D 145 R # $ v # D $ # K a m $ n # K l O v e # . ~","utterance_name":"zEoVu_188","words":"The technical name for the local species is different from that of the common clover.","phone_sequence":"D $ # 146 E k n I K L # n J m # f e # D $ # l O K L # s p i S i z # I z # d I f r $ n t # f r $ m # D 145 R # $ v # D $ # K a m $ n # K l O v e","sentence_idx":0,"sentence_estimated_duration":4.01,"locale":"en-US","paragraph_idx":188},{"script_title":"statements","transcription":"D $ # w J l z # E r P A r t # l Y z # @ t s Y d # D i # E G # $ v # D $ # s I R i # . ~","utterance_name":"zEoVu_190","words":"The Wales airport lies outside the edge of the city.","phone_sequence":"D $ # w J l z # E r P A r t # l Y z # @ t s Y d # D i # E G # $ v # D $ # s I R i","sentence_idx":0,"sentence_estimated_duration":2.64,"locale":"en-US","paragraph_idx":190},{"script_title":"statements","transcription":"D E n # D $ # S E l z # s I N k # 146 $ # D $ # b a R $ m # $ v # D $ # s i # . ~","utterance_name":"zEoVu_191","words":"Then the shells sink to the bottom of the sea.","phone_sequence":"D E n # D $ # S E l z # s I N k # 146 $ # D $ # b a R $ m # $ v # D $ # s i","sentence_idx":0,"sentence_estimated_duration":2.29,"locale":"en-US","paragraph_idx":191},{"script_title":"statements","transcription":"D i z # f Y n d I N z # l E d # 146 $ # D $ # K r i J S $ n # $ v # D $ # r J R i O # 145 n # ^ D e # d $ v Y s $ z # . ~","utterance_name":"zEoVu_192","words":"These findings led to the creation of the radio and other devices.","phone_sequence":"D i z # f Y n d I N z # l E d # 146 $ # D $ # K r i J S $ n # $ v # D $ # r J R i O # 145 n # ^ D e # d $ v Y s $ z","sentence_idx":0,"sentence_estimated_duration":3.68,"locale":"en-US","paragraph_idx":192},{"script_title":"statements","transcription":"D i z # P @ R e z # a r # D $ # m O s t # w Y d l i # j u z d # 146 Y p # . ~","utterance_name":"zEoVu_193","words":"These powders are the most widely used type.","phone_sequence":"D i z # P @ R e z # a r # D $ # m O s t # w Y d l i # j u z d # 146 Y p","sentence_idx":0,"sentence_estimated_duration":2.48,"locale":"en-US","paragraph_idx":193},{"script_title":"statements","transcription":"D i z # s p E S $ l I s t s # m 145 n I G # n 145 C $ r L # h 145 b I R 145 t s # f e # D $ # b E n $ f I R # $ v # P l 145 n t s # 145 n # 145 n I m $ l z # . ~","utterance_name":"zEoVu_194","words":"These specialists manage natural habitats for the benefit of plants and animals.","phone_sequence":"D i z # s p E S $ l I s t s # m 145 n I G # n 145 C $ r L # h 145 b I R 145 t s # f e # D $ # b E n $ f I R # $ v # P l 145 n t s # 145 n # 145 n I m $ l z","sentence_idx":0,"sentence_estimated_duration":4.35,"locale":"en-US","paragraph_idx":194},{"script_title":"statements","transcription":"D J # m J k # ^ p # $ b @ t # s E v $ n # P e s E n t # $ v # D $ # P i P L # I n # D i # E r i $ # . ~","utterance_name":"zEoVu_202","words":"They make up about seven percent of the people in the area.","phone_sequence":"D J # m J k # ^ p # $ b @ t # s E v $ n # P e s E n t # $ v # D $ # P i P L # I n # D i # E r i $","sentence_idx":0,"sentence_estimated_duration":2.85,"locale":"en-US","paragraph_idx":202},{"script_title":"statements","transcription":"D J # v I z I R I d # j e $ p # 145 n # D $ # m I R L i s t # . ~","utterance_name":"zEoVu_203","words":"They visited Europe and the Middle East.","phone_sequence":"D J # v I z I R I d # j e $ p # 145 n # D $ # m I R L i s t","sentence_idx":0,"sentence_estimated_duration":2.07,"locale":"en-US","paragraph_idx":203},{"script_title":"statements","transcription":"D I s # I z # $ # s m A l # Y l $ n d # l O K J R I R # $ b @ t # T r i # m Y l z # A f # D $ # K O s t # $ v # n A r D e n # I N g l $ n d # . ~","utterance_name":"zEoVu_206","words":"This is a small island located about three miles off the coast of northern England.","phone_sequence":"D I s # I z # $ # s m A l # Y l $ n d # l O K J R I R # $ b @ t # T r i # m Y l z # A f # D $ # K O s t # $ v # n A r D e n # I N g l $ n d","sentence_idx":0,"sentence_estimated_duration":4.69,"locale":"en-US","paragraph_idx":206},{"script_title":"statements","transcription":"D I s # I z # D $ # K a m $ n # n J m # $ v # $ # g r u p # $ v # P l 145 n t s # w I T # l a r G # , # h 145 n s $ m # f l @ e z # . ~","utterance_name":"zEoVu_207","words":"This is the common name of a group of plants with large, handsome flowers.","phone_sequence":"D I s # I z # D $ # K a m $ n # n J m # $ v # $ # g r u p # $ v # P l 145 n t s # w I T # l a r G # h 145 n s $ m # f l @ e z","sentence_idx":0,"sentence_estimated_duration":4.14,"locale":"en-US","paragraph_idx":207},{"script_title":"statements","transcription":"I n # D $ # f i l d # $ v # K E m I K L # f I z I k s # , # 146 a m i # w $ z # $ # P Y $ n i r # . ~","utterance_name":"zEoVu_208","words":"In the field of chemical physics, Tommy was a pioneer.","phone_sequence":"I n # D $ # f i l d # $ v # K E m I K L # f I z I k s # 146 a m i # w $ z # $ # P Y $ n i r","sentence_idx":0,"sentence_estimated_duration":3.29,"locale":"en-US","paragraph_idx":208},{"script_title":"statements","transcription":"146 u # $ v # D $ m # i r ^ p 146 I R # I n # D $ # s E v I n 146 i n # h ^ n d r I d z # . ~","utterance_name":"zEoVu_210","words":"Two of them erupted in the seventeen hundreds.","phone_sequence":"146 u # $ v # D $ m # i r ^ p 146 I R # I n # D $ # s E v I n 146 i n # h ^ n d r I d z","sentence_idx":0,"sentence_estimated_duration":2.33,"locale":"en-US","paragraph_idx":210}];
+</script>
+
+<script>
+// ── Inverted index ─────────────────────────────────────────────
+const INDEX=(()=>{const m=new Map();RAW_DATA.forEach((s,i)=>{s.words.toLowerCase().replace(/[^a-z0-9 ]/g,'').split(/\s+/).forEach(w=>{if(w.length<2)return;if(!m.has(w))m.set(w,new Set());m.get(w).add(i);});});return m;})();
+const AUDIO_CACHE=new Map();
+const CATS={};let TOTAL_DUR=0;
+RAW_DATA.forEach(s=>{CATS[s.script_title]=(CATS[s.script_title]||0)+1;TOTAL_DUR+=s.sentence_estimated_duration;});
+
+const audioFiles = new Map();
+const labels = new Map();
+RAW_DATA.forEach(s => labels.set(s.utterance_name, {words:s.words, original_words:s.words, status:'pending'}));
+
+let currentAudio = null;
+let currentAudioUID = null;
+let state={filter:'all',sort:'idx',query:'',selected:null,playing:null,results:[...RAW_DATA]};
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const id=tab.dataset.tab;
+    document.getElementById('samplesTab').style.display=id==='samples'?'grid':'none';
+    document.getElementById('labelTab').style.display=id==='label'?'grid':'none';
+    document.getElementById('pdfTab').style.display=id==='pdf'?'flex':'none';
+    if(id==='label'){renderLabelList();updateLabelStats();}
+  });
+});
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function hl(text,q){if(!q.trim())return esc(text);const e=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return esc(text).replace(new RegExp(`(${e})`,'gi'),'<mark>$1</mark>');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function setStatus(msg){document.getElementById('statusMsg').textContent=msg;}
+function copyText(uid){const s=RAW_DATA.find(x=>x.utterance_name===uid);if(!s)return;navigator.clipboard.writeText(s.words).then(()=>showToast('Copied!'));}
+
+function fastSearch(q){
+  if(!q.trim())return null;
+  const terms=q.toLowerCase().replace(/[^a-z0-9 ]/g,'').split(/\s+/).filter(t=>t.length>1);
+  if(!terms.length)return new Set();
+  const scores=new Map();
+  terms.forEach(term=>{INDEX.forEach((s,word)=>{if(word.includes(term)){const w=word===term?2:1;s.forEach(i=>scores.set(i,(scores.get(i)||0)+w));}});});
+  const qL=q.toLowerCase();
+  RAW_DATA.forEach((s,i)=>{if(s.words.toLowerCase().includes(qL))scores.set(i,(scores.get(i)||0)+5);});
+  return scores;
+}
+function applyFilters(){
+  let pool=RAW_DATA;
+  if(state.filter!=='all')pool=pool.filter(s=>s.script_title===state.filter);
+  if(state.query.trim()){
+    const scores=fastSearch(state.query);
+    if(scores&&scores.size>0){
+      const um=new Map(RAW_DATA.map((s,i)=>[s.utterance_name,i]));
+      pool=pool.filter(s=>scores.has(um.get(s.utterance_name))).sort((a,b)=>(scores.get(um.get(b.utterance_name))||0)-(scores.get(um.get(a.utterance_name))||0));
+    }else if(scores&&scores.size===0)pool=[];
+  }else{
+    if(state.sort==='dur')pool=[...pool].sort((a,b)=>b.sentence_estimated_duration-a.sentence_estimated_duration);
+    else if(state.sort==='az')pool=[...pool].sort((a,b)=>a.words.localeCompare(b.words));
+    else pool=[...pool].sort((a,b)=>a.paragraph_idx-b.paragraph_idx);
+  }
+  state.results=pool;
+}
+
+function renderList(){
+  const list=document.getElementById('sampleList');
+  document.getElementById('resultPill').textContent=`${state.results.length} result${state.results.length!==1?'s':''}`;
+  if(!state.results.length){list.innerHTML=`<div class="empty-s"><div style="font-size:28px;opacity:.2">⊘</div><div>No samples match</div></div>`;return;}
+  const frag=document.createDocumentFragment();
+  const cols='28px 68px 70px 1fr 52px';
+  state.results.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='sr'+(state.selected===s.utterance_name?' active':'')+(state.playing===s.utterance_name?' playing':'');
+    div.dataset.uid=s.utterance_name;
+    div.style.gridTemplateColumns=cols;
+    const cs=s.script_title==='common_phrases'?'phrases':s.script_title==='exclamations'?'exclam.':s.script_title==='statements'?'stmt.':'quest.';
+    div.innerHTML=`<div class="play-icon">▶</div><div class="row-num">${String(i+1).padStart(3,'0')}</div><div class="row-id">${s.utterance_name}</div><div class="row-cat cat-${s.script_title}">${cs}</div><div class="row-text">${hl(s.words,state.query)}</div><div class="row-dur">${s.sentence_estimated_duration.toFixed(2)}s</div>`;
+    div.addEventListener('click',()=>selectSample(s.utterance_name));
+    div.addEventListener('dblclick',()=>playSample(s.utterance_name));
+    frag.appendChild(div);
+  });
+  list.innerHTML='';list.appendChild(frag);
+}
+
+function renderDetail(uid){
+  const s=RAW_DATA.find(x=>x.utterance_name===uid);
+  const body=document.getElementById('detailBody');
+  if(!s){body.innerHTML=`<div class="dp-empty"><div style="font-size:26px;opacity:.2">◈</div><div>Select a sample</div></div>`;return;}
+  const seed=uid.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const bars=Array.from({length:44},(_,i)=>20+Math.abs(Math.sin((seed*(i+1)*137)%100)*70));
+  const phones=s.phone_sequence.split(/\s+/);
+  const chips=phones.map(p=>{let c='ph';if(p==='#')c+=' wb';else if(p==='145')c+=' sp';else if(p==='146')c+=' ss';return`<span class="${c}">${p==='#'?'│':p}</span>`;}).join('');
+  const sim=RAW_DATA.filter(x=>x.script_title===s.script_title&&x.utterance_name!==uid).sort(()=>Math.random()-.5).slice(0,4);
+  const isP=state.playing===uid;
+  const hasAudio=audioFiles.has(uid);
+  body.innerHTML=`
+    <div class="df"><div class="dl">Text</div><div class="dv">${esc(s.words)}</div></div>
+    ${hasAudio?`<div class="df"><div class="dl">Audio Source</div><span class="badge loaded">● REAL AUDIO</span></div>`:`<div class="df"><div class="dl">Audio Source</div><span class="badge synth">SYNTHESIZED</span></div>`}
+    <div style="display:flex;align-items:flex-end;gap:1.5px;height:40px;background:var(--bg3);border:1px solid var(--border);padding:4px 7px;margin-bottom:14px;overflow:hidden">
+      ${bars.map(h=>`<div style="flex:1;height:${h}%;background:${isP?'var(--green)':'var(--amber)'};opacity:${.4+(h/100)*.6}"></div>`).join('')}
+    </div>
+    <div class="act-row">
+      <button class="btn primary ${isP?'playing-btn':''}" onclick="playSample('${uid}')">${isP?'■ STOP':'▶ PLAY'}</button>
+      <button class="btn" onclick="copyText('${uid}')">⎘ COPY</button>
+    </div>
+    <div class="df"><div class="dl">ID · Category · Duration</div>
+      <div class="dm" style="display:flex;gap:10px;flex-wrap:wrap">
+        <span style="color:var(--amber)">${s.utterance_name}</span>
+        <span class="cat-${s.script_title}">${s.script_title}</span>
+        <span>${s.sentence_estimated_duration.toFixed(2)}s</span>
+        ${AUDIO_CACHE.has(uid)?'<span style="color:var(--green)">● CACHED</span>':''}
+      </div>
+    </div>
+    <div class="dur-bar"><div class="dur-fill" style="width:${Math.min(100,(s.sentence_estimated_duration/5)*100)}%"></div></div>
+    <div class="df"><div class="dl">Phonemes</div><div class="ph-grid">${chips}</div></div>
+    <div class="df"><div class="dl">Counts</div>
+      <div class="dm"><span style="color:var(--amber)">${phones.filter(p=>p!=='#').length}</span> phonemes · <span style="color:var(--blue)">${s.words.split(/\s+/).length}</span> words</div>
+    </div>
+    <div class="df"><div class="dl">Similar</div>${sim.map(x=>`<div class="sim-item" onclick="selectSample('${x.utterance_name}')"><span class="sim-score">${x.sentence_estimated_duration.toFixed(1)}s</span><span class="sim-text">${esc(x.words)}</span></div>`).join('')}</div>`;
+}
+
+function selectSample(uid){state.selected=uid;renderList();renderDetail(uid);setStatus(`Selected: ${uid}`);}
+
+function playSample(uid){
+  const s=RAW_DATA.find(x=>x.utterance_name===uid);if(!s)return;
+  if(state.playing){
+    stopCurrentAudio();
+    const prev=state.playing;state.playing=null;
+    renderList();renderDetail(state.selected);document.getElementById('playingLabel').textContent='';
+    if(prev===uid){setStatus('Stopped');return;}
+  }
+  state.playing=uid;
+  document.getElementById('playingLabel').textContent=`▶ ${uid}`;
+  renderList();renderDetail(uid);
+  if(audioFiles.has(uid)){
+    const af=audioFiles.get(uid);
+    currentAudio=new Audio(af.url);
+    currentAudio.onended=()=>{AUDIO_CACHE.set(uid,true);document.getElementById('cacheCount').textContent=AUDIO_CACHE.size;state.playing=null;currentAudio=null;currentAudioUID=null;renderList();renderDetail(state.selected);document.getElementById('playingLabel').textContent='';setStatus(`Done: ${uid}`);};
+    currentAudio.onerror=()=>{console.warn('Audio error, falling back to synth');currentAudio=null;synthSpeak(uid,s.words);};
+    currentAudio.play().catch(()=>synthSpeak(uid,s.words));
+    currentAudioUID=uid;
+    setStatus(`▶ Playing (real audio): ${s.words.slice(0,50)}`);
+  }else{
+    synthSpeak(uid,s.words);
+  }
+}
+
+function stopCurrentAudio(){
+  if(currentAudio){currentAudio.pause();currentAudio=null;currentAudioUID=null;}
+  window.speechSynthesis.cancel();
+}
+
+function synthSpeak(uid,text){
+  setStatus(`▶ Synthesizing: ${text.slice(0,50)}`);
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=1;u.pitch=1;
+  u.onend=()=>{AUDIO_CACHE.set(uid,true);document.getElementById('cacheCount').textContent=AUDIO_CACHE.size;state.playing=null;renderList();renderDetail(state.selected);document.getElementById('playingLabel').textContent='';setStatus(`Done: ${uid}`);};
+  u.onerror=()=>{state.playing=null;renderList();setStatus(`Error: ${uid}`);document.getElementById('playingLabel').textContent='';};
+  window.speechSynthesis.speak(u);
+}
+
+let sTimer;
+document.getElementById('searchInput').addEventListener('input',e=>{
+  clearTimeout(sTimer);sTimer=setTimeout(()=>{state.query=e.target.value;applyFilters();renderList();document.getElementById('searchCount').textContent=state.query?state.results.length:'';},80);
+});
+document.getElementById('filterBtns').addEventListener('click',e=>{
+  const btn=e.target.closest('.fb');if(!btn)return;
+  document.querySelectorAll('#filterBtns .fb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');state.filter=btn.dataset.cat;applyFilters();renderList();
+});
+document.querySelectorAll('.sb-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');state.sort=btn.dataset.sort;applyFilters();renderList();
+}));
+let focusIdx=-1;
+document.addEventListener('keydown',e=>{
+  const search=document.getElementById('searchInput');
+  if(e.key==='/'&&document.activeElement!==search&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();search.focus();return;}
+  if(e.key==='Escape'){stopCurrentAudio();state.playing=null;state.query='';search.value='';applyFilters();renderList();document.getElementById('playingLabel').textContent='';return;}
+  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    if(document.getElementById('samplesTab').style.display!=='none'){
+      focusIdx=Math.max(0,Math.min(state.results.length-1,focusIdx+(e.key==='ArrowDown'?1:-1)));
+      const uid=state.results[focusIdx]?.utterance_name;
+      if(uid){selectSample(uid);document.querySelectorAll('.sr')[focusIdx]?.scrollIntoView({block:'nearest'});}
+    }else{
+      const rows=document.querySelectorAll('.lr');
+      labelFocusIdx=Math.max(0,Math.min(rows.length-1,(labelFocusIdx||0)+(e.key==='ArrowDown'?1:-1)));
+      rows[labelFocusIdx]?.click();
+      rows[labelFocusIdx]?.scrollIntoView({block:'nearest'});
+    }
+    return;
+  }
+  if((e.key==='Enter'||e.key===' ')&&document.activeElement!==search){
+    e.preventDefault();
+    if(document.getElementById('samplesTab').style.display!=='none'){if(state.selected)playSample(state.selected);}
+    else{if(labelSelected)playLabelAudio(labelSelected);}
+  }
+});
+
+// ── LABEL TAB ─────────────────────────────────────────────────
+let labelFilter='all';
+let labelSelected=null;
+let labelFocusIdx=0;
+let labelCurrentAudio=null;
+let labelPlaying=null;
+
+const uploadZone=document.getElementById('uploadZone');
+const audioInput=document.getElementById('audioInput');
+uploadZone.addEventListener('click',()=>audioInput.click());
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag');loadAudioFiles([...e.dataTransfer.files]);});
+audioInput.addEventListener('change',e=>loadAudioFiles([...e.target.files]));
+
+function loadAudioFiles(files){
+  let loaded=0,skipped=0;
+  files.forEach(file=>{
+    const uid=file.name.replace(/\.[^.]+$/,'');
+    const exists=RAW_DATA.find(s=>s.utterance_name===uid);
+    if(!exists){skipped++;return;}
+    if(audioFiles.has(uid))URL.revokeObjectURL(audioFiles.get(uid).url);
+    const url=URL.createObjectURL(file);
+    audioFiles.set(uid,{url,name:file.name,type:file.type||'audio/'+file.name.split('.').pop()});
+    loaded++;
+  });
+  updateLabelStats();renderLabelList();
+  if(labelSelected)renderLabelEditor(labelSelected);
+  showToast(`Loaded ${loaded} file${loaded!==1?'s':''}${skipped?` (${skipped} skipped — no matching ID)`:''}`);
+  setStatus(`Audio loaded: ${audioFiles.size} files matched`);
+  document.getElementById('labeledCount').textContent=audioFiles.size;
+}
+
+function updateLabelStats(){
+  const total=RAW_DATA.length;
+  const loaded=audioFiles.size;
+  let approved=0,flagged=0,pending=0;
+  labels.forEach(l=>{if(l.status==='approved')approved++;else if(l.status==='flagged')flagged++;else pending++;});
+  document.getElementById('ls-loaded').textContent=loaded;
+  document.getElementById('ls-total').textContent=total;
+  document.getElementById('ls-approved').textContent=approved;
+  document.getElementById('ls-flagged').textContent=flagged;
+  document.getElementById('lfc-all').textContent=total;
+  document.getElementById('lfc-loaded').textContent=loaded;
+  document.getElementById('lfc-pending').textContent=pending;
+  document.getElementById('lfc-approved').textContent=approved;
+  document.getElementById('lfc-flagged').textContent=flagged;
+  document.getElementById('labeledCount').textContent=approved;
+  document.getElementById('prog-approved').style.width=(approved/total*100)+'%';
+  const flaggedLeft=approved/total*100;
+  document.getElementById('prog-flagged').style.left=flaggedLeft+'%';
+  document.getElementById('prog-flagged').style.width=(flagged/total*100)+'%';
+}
+
+document.getElementById('labelFilterBtns').addEventListener('click',e=>{
+  const btn=e.target.closest('.fb');if(!btn)return;
+  document.querySelectorAll('#labelFilterBtns .fb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');labelFilter=btn.dataset.lf;renderLabelList();
+});
+
+function getLabeledPool(){
+  return RAW_DATA.filter(s=>{
+    if(labelFilter==='all')return true;
+    if(labelFilter==='loaded')return audioFiles.has(s.utterance_name);
+    const st=labels.get(s.utterance_name)?.status||'pending';
+    return st===labelFilter;
+  });
+}
+
+function renderLabelList(){
+  const pool=getLabeledPool();
+  document.getElementById('labelPill').textContent=`${pool.length} shown`;
+  const list=document.getElementById('labelList');
+  if(!pool.length){list.innerHTML=`<div class="empty-s"><div style="font-size:26px;opacity:.2">⊘</div><div>No samples in this filter</div></div>`;return;}
+  const frag=document.createDocumentFragment();
+  pool.forEach(s=>{
+    const lbl=labels.get(s.utterance_name)||{status:'pending'};
+    const hasAudio=audioFiles.has(s.utterance_name);
+    const statusClass=lbl.status==='approved'?'approved':lbl.status==='flagged'?'flagged':hasAudio?'loaded':'pending';
+    const div=document.createElement('div');
+    div.className='lr'+(labelSelected===s.utterance_name?' active':'');
+    div.dataset.uid=s.utterance_name;
+    div.innerHTML=`
+      <div class="lr-status ${statusClass}"></div>
+      <div class="lr-info">
+        <div class="lr-id">${s.utterance_name} <span class="cat-${s.script_title}" style="font-size:9px">${s.script_title}</span></div>
+        <div class="lr-text">${esc(lbl.words||s.words)}</div>
+      </div>
+      <div class="lr-audio ${hasAudio?'has-audio':'no-audio'}">${hasAudio?'▶':'–'}</div>`;
+    div.addEventListener('click',()=>selectLabelSample(s.utterance_name));
+    div.addEventListener('dblclick',()=>playLabelAudio(s.utterance_name));
+    frag.appendChild(div);
+  });
+  list.innerHTML='';list.appendChild(frag);
+}
+
+function selectLabelSample(uid){
+  labelSelected=uid;renderLabelList();renderLabelEditor(uid);
+  const pool=getLabeledPool();
+  const idx=pool.findIndex(s=>s.utterance_name===uid);
+  document.getElementById('labelNavInfo').textContent=`${idx+1}/${pool.length}`;
+}
+
+function renderLabelEditor(uid){
+  const s=RAW_DATA.find(x=>x.utterance_name===uid);
+  if(!s)return;
+  const lbl=labels.get(uid)||{words:s.words,status:'pending',original_words:s.words};
+  const hasAudio=audioFiles.has(uid);
+  const af=hasAudio?audioFiles.get(uid):null;
+  const isApproved=lbl.status==='approved';
+  const isFlagged=lbl.status==='flagged';
+  const editor=document.getElementById('labelEditor');
+  editor.innerHTML=`
+    <div class="audio-player">
+      <div class="ap-top">
+        <button class="ap-play ${labelPlaying===uid?'playing':''}" id="ap-play-btn" onclick="playLabelAudio('${uid}')">
+          ${labelPlaying===uid?'■':'▶'}
+        </button>
+        <div class="ap-info">
+          <div class="ap-name">${af?af.name:'No audio file loaded'}</div>
+          <div class="ap-type">${af?af.type:'Synthesis fallback'} · ${s.sentence_estimated_duration.toFixed(2)}s</div>
+        </div>
+        ${hasAudio?`<span class="badge loaded">REAL</span>`:`<span class="badge synth">SYNTH</span>`}
+      </div>
+      <div class="ap-bar" id="ap-bar" onclick="seekLabelAudio(event, '${uid}')">
+        <div class="ap-prog" id="ap-prog" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="df">
+      <div class="dl">Transcription Label <span style="color:var(--text-dim)">(edit if wrong)</span></div>
+      <textarea class="label-edit" id="label-text-${uid}" rows="3">${esc(lbl.words)}</textarea>
+      ${lbl.words!==lbl.original_words?`<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--amber);margin-bottom:8px">⚠ Modified from original</div>`:''}
+    </div>
+    <div class="label-actions">
+      <button class="la-btn approve ${isApproved?'active':''}" onclick="setLabelStatus('${uid}','approved')">✓ APPROVE</button>
+      <button class="la-btn flag ${isFlagged?'active':''}" onclick="setLabelStatus('${uid}','flagged')">⚑ FLAG</button>
+      <button class="la-btn reset" onclick="resetLabel('${uid}')">↺ RESET</button>
+    </div>
+    <div class="df">
+      <div class="dl">Original Text</div>
+      <div class="dm" style="color:var(--text-dim)">${esc(s.words)}</div>
+    </div>
+    <div class="df">
+      <div class="dl">Category · Duration</div>
+      <div class="dm"><span class="cat-${s.script_title}">${s.script_title}</span> · ${s.sentence_estimated_duration.toFixed(2)}s</div>
+    </div>
+    <div class="df">
+      <div class="dl">Phoneme Sequence</div>
+      <div class="ph-grid">${s.phone_sequence.split(/\s+/).map(p=>{let c='ph';if(p==='#')c+=' wb';else if(p==='145')c+=' sp';else if(p==='146')c+=' ss';return`<span class="${c}">${p==='#'?'│':p}</span>`;}).join('')}</div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button class="btn" onclick="navigateLabel(-1)" style="font-size:12px">← PREV</button>
+      <button class="btn" onclick="navigateLabel(1)" style="font-size:12px">NEXT →</button>
+    </div>`;
+  const ta=document.getElementById(`label-text-${uid}`);
+  if(ta){ta.addEventListener('input',()=>{const current=labels.get(uid)||{};labels.set(uid,{...current,words:ta.value});});}
+}
+
+function playLabelAudio(uid){
+  if(labelPlaying===uid){
+    if(labelCurrentAudio){labelCurrentAudio.pause();labelCurrentAudio=null;}
+    window.speechSynthesis.cancel();
+    labelPlaying=null;updateLabelPlayUI(uid,false);setStatus('Stopped');return;
+  }
+  if(labelPlaying){
+    if(labelCurrentAudio){labelCurrentAudio.pause();labelCurrentAudio=null;}
+    window.speechSynthesis.cancel();updateLabelPlayUI(labelPlaying,false);
+  }
+  const s=RAW_DATA.find(x=>x.utterance_name===uid);if(!s)return;
+  labelPlaying=uid;updateLabelPlayUI(uid,true);setStatus(`▶ Playing: ${uid}`);
+  if(audioFiles.has(uid)){
+    const af=audioFiles.get(uid);
+    labelCurrentAudio=new Audio(af.url);
+    const prog=document.getElementById('ap-prog');
+    labelCurrentAudio.ontimeupdate=()=>{if(prog&&labelCurrentAudio.duration){prog.style.width=(labelCurrentAudio.currentTime/labelCurrentAudio.duration*100)+'%';}};
+    labelCurrentAudio.onended=()=>{labelPlaying=null;labelCurrentAudio=null;updateLabelPlayUI(uid,false);if(prog)prog.style.width='0%';setStatus(`Done: ${uid}`);};
+    labelCurrentAudio.onerror=()=>{labelCurrentAudio=null;synthLabelSpeak(uid,s.words);};
+    labelCurrentAudio.play().catch(err=>{
+      console.warn('Cannot play audio:', err.message);
+      showToast('Cannot play .caf directly — convert to MP3 first');
+      labelPlaying=null;updateLabelPlayUI(uid,false);setStatus(`Format unsupported: ${err.message}`);
+    });
+  }else{synthLabelSpeak(uid,s.words);}
+}
+
+function synthLabelSpeak(uid,text){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=1;
+  u.onend=()=>{labelPlaying=null;updateLabelPlayUI(uid,false);setStatus(`Done: ${uid}`);};
+  u.onerror=()=>{labelPlaying=null;updateLabelPlayUI(uid,false);};
+  window.speechSynthesis.speak(u);
+}
+
+function updateLabelPlayUI(uid,playing){
+  const btn=document.getElementById('ap-play-btn');
+  if(btn){btn.className='ap-play'+(playing?' playing':'');btn.textContent=playing?'■':'▶';}
+}
+
+function seekLabelAudio(e,uid){
+  if(!labelCurrentAudio||!labelCurrentAudio.duration)return;
+  const bar=e.currentTarget;
+  const pct=(e.clientX-bar.getBoundingClientRect().left)/bar.offsetWidth;
+  labelCurrentAudio.currentTime=pct*labelCurrentAudio.duration;
+}
+
+function setLabelStatus(uid,status){
+  const lbl=labels.get(uid)||{};
+  const ta=document.getElementById(`label-text-${uid}`);
+  const words=ta?ta.value:(lbl.words||RAW_DATA.find(s=>s.utterance_name===uid)?.words||'');
+  labels.set(uid,{...lbl,words,status:lbl.status===status?'pending':status});
+  renderLabelList();renderLabelEditor(uid);updateLabelStats();
+  setStatus(`${uid}: ${labels.get(uid).status}`);
+  if(status==='approved'&&labels.get(uid).status==='approved')navigateLabel(1);
+}
+
+function resetLabel(uid){
+  const s=RAW_DATA.find(x=>x.utterance_name===uid);if(!s)return;
+  labels.set(uid,{words:s.words,original_words:s.words,status:'pending'});
+  renderLabelList();renderLabelEditor(uid);updateLabelStats();setStatus(`Reset: ${uid}`);
+}
+
+function navigateLabel(dir){
+  const pool=getLabeledPool();
+  const idx=pool.findIndex(s=>s.utterance_name===labelSelected);
+  const next=pool[idx+dir];
+  if(next){selectLabelSample(next.utterance_name);document.querySelectorAll('.lr')[Math.max(0,idx+dir)]?.scrollIntoView({block:'nearest'});}
+}
+
+function exportLabels(){
+  const out=RAW_DATA.map(s=>{
+    const lbl=labels.get(s.utterance_name)||{};
+    return{...s,words:lbl.words||s.words,label_status:lbl.status||'pending',has_audio:audioFiles.has(s.utterance_name)};
+  });
+  const blob=new Blob([out.map(o=>JSON.stringify(o)).join('\n')],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='metadata_labeled.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('Exported metadata_labeled.json');setStatus(`Exported ${out.length} samples`);
+}
+
+// ── PDF READER ────────────────────────────────────────────────
+let pdfSentences=[],pdfCurIdx=-1,pdfSpeaking=false,pdfPaused=false,pdfCurUtt=null,voices=[];
+function loadVoices(){voices=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'));const sel=document.getElementById('voiceSelect');sel.innerHTML=voices.map((v,i)=>`<option value="${i}" ${v.default?'selected':''}>${v.name} (${v.lang})</option>`).join('');if(!voices.length)sel.innerHTML='<option>Default</option>';}
+window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();
+document.getElementById('speedSlider').addEventListener('input',e=>{document.getElementById('speedVal').textContent=parseFloat(e.target.value).toFixed(1)+'×';});
+const pdfDZ=document.getElementById('pdfDropZone'),pdfIn=document.getElementById('pdfInput');
+pdfDZ.addEventListener('click',()=>pdfIn.click());
+pdfDZ.addEventListener('dragover',e=>{e.preventDefault();pdfDZ.classList.add('drag');});
+pdfDZ.addEventListener('dragleave',()=>pdfDZ.classList.remove('drag'));
+pdfDZ.addEventListener('drop',e=>{e.preventDefault();pdfDZ.classList.remove('drag');const f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf')loadPDF(f);});
+pdfIn.addEventListener('change',e=>{const f=e.target.files[0];if(f)loadPDF(f);});
+async function loadPDF(file){
+  setStatus(`Loading: ${file.name}...`);stopPDF();pdfSentences=[];
+  try{
+    const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+    let text='';
+    for(let p=1;p<=pdf.numPages;p++){const pg=await pdf.getPage(p);const tc=await pg.getTextContent();text+=(tc.items.map(i=>i.str).join(' '))+'\n\n';setStatus(`Extracting p${p}/${pdf.numPages}...`);}
+    pdfSentences=(text.match(/[^.!?]+[.!?]+["']?|[^.!?]+$/g)||[text]).map(s=>s.trim()).filter(s=>s.length>3);
+    document.getElementById('pdfInfo').style.display='block';
+    document.getElementById('pdfName').textContent=file.name;
+    document.getElementById('pdfPages').textContent=pdf.numPages;
+    document.getElementById('pdfSents').textContent=pdfSentences.length;
+    document.getElementById('sentCountBadge').textContent=`(${pdfSentences.length})`;
+    document.getElementById('pdfEmpty').style.display='none';
+    document.getElementById('pdfContent').style.display='block';
+    document.getElementById('pdfRHdr').style.display='flex';
+    document.getElementById('pdfFilename').textContent=file.name;
+    document.getElementById('pdfPageInfo').textContent=`${pdf.numPages} pages`;
+    renderPDFContent();
+    document.getElementById('pdfPlayBtn').disabled=false;
+    document.getElementById('pdfStopBtn').disabled=false;
+    setStatus(`Loaded: ${pdfSentences.length} sentences`);
+  }catch(e){console.error(e);setStatus('PDF error — ensure it has text content');}
+}
+function renderPDFContent(){
+  const c=document.getElementById('pdfContent'),n=document.getElementById('sentenceNav');
+  c.innerHTML='';n.innerHTML='';
+  pdfSentences.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='sent';d.id=`ps-${i}`;
+    d.innerHTML=s.split(/\s+/).map((w,wi)=>`<span class="word" id="pw-${i}-${wi}">${esc(w)}</span> `).join('');
+    d.addEventListener('click',()=>jumpPDF(i));c.appendChild(d);
+    const ni=document.createElement('div');ni.className='sn-item';ni.id=`pn-${i}`;
+    ni.textContent=`${i+1}. ${s.slice(0,55)}${s.length>55?'…':''}`;
+    ni.addEventListener('click',()=>jumpPDF(i));n.appendChild(ni);
+  });
+}
+function jumpPDF(idx){stopPDF();pdfCurIdx=idx-1;pdfSpeaking=true;pdfPaused=false;document.getElementById('pdfPlayBtn').disabled=true;document.getElementById('pdfPauseBtn').disabled=false;readNextPDF();}
+function readNextPDF(){
+  pdfCurIdx++;
+  if(pdfCurIdx>=pdfSentences.length){pdfSpeaking=false;document.getElementById('pdfPlayBtn').disabled=false;document.getElementById('pdfPauseBtn').disabled=true;document.getElementById('pdfProgFill').style.width='100%';document.getElementById('pdfPct').textContent='100%';document.getElementById('playingLabel').textContent='';setStatus('Reading complete');return;}
+  hlPDFSent(pdfCurIdx);updatePDFProg();
+  const u=new SpeechSynthesisUtterance(pdfSentences[pdfCurIdx]);
+  u.rate=parseFloat(document.getElementById('speedSlider').value);u.lang='en-US';
+  const vi=parseInt(document.getElementById('voiceSelect').value);if(voices[vi])u.voice=voices[vi];
+  u.onboundary=e=>{if(e.name==='word'){const wi=pdfSentences[pdfCurIdx].slice(0,e.charIndex).split(/\s+/).filter(w=>w.length>0).length;hlPDFWord(pdfCurIdx,wi);}};
+  u.onend=()=>{if(pdfSpeaking&&!pdfPaused)readNextPDF();};
+  u.onerror=e=>{if(e.error!=='interrupted'&&pdfSpeaking&&!pdfPaused)readNextPDF();};
+  pdfCurUtt=u;window.speechSynthesis.speak(u);
+}
+function hlPDFSent(idx){
+  document.querySelectorAll('.sent,.sn-item').forEach(el=>el.classList.remove('active-sent'));
+  document.querySelectorAll('.word').forEach(w=>{w.classList.remove('current-word','spoken');});
+  document.getElementById(`ps-${idx}`)?.classList.add('active-sent');
+  document.getElementById(`pn-${idx}`)?.classList.add('active-sent');
+  document.getElementById(`ps-${idx}`)?.scrollIntoView({block:'center',behavior:'smooth'});
+  document.getElementById(`pn-${idx}`)?.scrollIntoView({block:'nearest',behavior:'smooth'});
+  for(let i=0;i<idx;i++){document.getElementById(`ps-${i}`)?.querySelectorAll('.word').forEach(w=>w.classList.add('spoken'));}
+}
+function hlPDFWord(si,wi){
+  const sent=document.getElementById(`ps-${si}`);if(!sent)return;
+  const words=sent.querySelectorAll('.word');
+  words.forEach((w,i)=>{w.classList.remove('current-word');if(i<wi)w.classList.add('spoken');else w.classList.remove('spoken');});
+  if(words[wi])words[wi].classList.add('current-word');
+}
+function updatePDFProg(){const p=pdfSentences.length>0?Math.round(pdfCurIdx/pdfSentences.length*100):0;document.getElementById('pdfPct').textContent=p+'%';document.getElementById('pdfProgFill').style.width=p+'%';document.getElementById('playingLabel').textContent=`📄 ${pdfCurIdx+1}/${pdfSentences.length}`;setStatus(`Reading ${pdfCurIdx+1}/${pdfSentences.length}`);}
+function startPDF(){if(!pdfSentences.length)return;if(pdfPaused){pdfPaused=false;pdfSpeaking=true;window.speechSynthesis.resume();document.getElementById('pdfPlayBtn').disabled=true;document.getElementById('pdfPauseBtn').disabled=false;return;}pdfSpeaking=true;pdfPaused=false;pdfCurIdx=-1;document.getElementById('pdfPlayBtn').disabled=true;document.getElementById('pdfPauseBtn').disabled=false;document.getElementById('pdfStopBtn').disabled=false;readNextPDF();}
+function pausePDF(){pdfPaused=true;pdfSpeaking=false;window.speechSynthesis.pause();document.getElementById('pdfPlayBtn').disabled=false;document.getElementById('pdfPauseBtn').disabled=true;setStatus('Paused');}
+function stopPDF(){pdfSpeaking=false;pdfPaused=false;pdfCurIdx=-1;window.speechSynthesis.cancel();document.getElementById('pdfPlayBtn').disabled=pdfSentences.length===0;document.getElementById('pdfPauseBtn').disabled=true;document.getElementById('pdfProgFill').style.width='0%';document.getElementById('pdfPct').textContent='0%';document.getElementById('playingLabel').textContent='';document.querySelectorAll('.sent,.sn-item').forEach(el=>el.classList.remove('active-sent'));document.querySelectorAll('.word').forEach(w=>{w.classList.remove('current-word','spoken');});setStatus('Stopped');}
+document.getElementById('pdfPlayBtn').addEventListener('click',startPDF);
+document.getElementById('pdfPauseBtn').addEventListener('click',pausePDF);
+document.getElementById('pdfStopBtn').addEventListener('click',stopPDF);
+
+// ── INIT ──────────────────────────────────────────────────────
+function init(){
+  document.getElementById('totalCount').textContent=RAW_DATA.length;
+  document.getElementById('totalDur').textContent=(TOTAL_DUR/60).toFixed(1)+'min';
+  Object.entries(CATS).forEach(([cat,count])=>{const el=document.getElementById(`fc-${cat}`);if(el)el.textContent=count;});
+  document.getElementById('fc-all').textContent=RAW_DATA.length;
+  document.getElementById('lfc-all').textContent=RAW_DATA.length;
+  document.getElementById('lfc-pending').textContent=RAW_DATA.length;
+  document.getElementById('ls-total').textContent=RAW_DATA.length;
+  applyFilters();renderList();
+  setStatus(`Ready · ${RAW_DATA.length} samples · Drop .caf files in Label tab`);
+}
+init();
+</script>
+</body>
+</html>.sample-list::-webkit-scrollbar{width:5px}
 .sample-list::-webkit-scrollbar-thumb{background:var(--border)}
 .sr{display:grid;align-items:center;border-bottom:1px solid rgba(42,46,51,.5);padding:0 14px;height:48px;cursor:pointer;transition:background .1s;position:relative}
 .sr:hover{background:var(--bg2)}
